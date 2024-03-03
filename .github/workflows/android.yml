@@ -22,6 +22,9 @@ jobs:
       run: ./gradlew assembleRelease
     - name: Releasing using Hub
       uses: kyze8439690/action-release-releaseapk@master
+    - name: Build Android release APK with EXPO
+      uses: goblin-ihx/action-release-releaseapk@v2
+            
       env:
        GITHUB_TOKEN: ${{ secrets.SECRET_FOR_APK }}
        APP_FOLDER: app
