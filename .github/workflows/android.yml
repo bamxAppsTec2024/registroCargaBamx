@@ -1,0 +1,33 @@
+name: Build & Publish Release APK
+ 
+on:
+  push:
+    tags:
+      - '*'
+
+
+jobs:
+  Gradle:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+    - name: setup jdk
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Make Gradle executable
+      run: chmod +x ./gradlew
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+    - name: Releasing using Hub
+      uses: kyze8439690/action-release-releaseapk@master
+      env:
+       GITHUB_TOKEN: ${{ secrets.SECRET_FOR_APK }}
+       APP_FOLDER: app
+       API_KEY: AIzaSyCJDa8CZRHiL9fnPEyiqcL8FhztVk8WsZs
+       AUTH_DOMAIN: tecapps2024.firebaseapp.com
+       PROJECT_ID: tecapps2024
+       STORAGE_BUCKET: tecapps2024.appspot.com
+       MESSAGING_SENDER_ID: 875183279926
+       APP_ID: 1:875183279926:web:1702d658d306080d282d97
