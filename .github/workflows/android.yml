@@ -25,9 +25,9 @@ jobs:
       env:
        GITHUB_TOKEN: ${{ secrets.SECRET_FOR_APK }}
        APP_FOLDER: app
-       API_KEY: AIzaSyCJDa8CZRHiL9fnPEyiqcL8FhztVk8WsZs
-       AUTH_DOMAIN: tecapps2024.firebaseapp.com
-       PROJECT_ID: tecapps2024
-       STORAGE_BUCKET: tecapps2024.appspot.com
-       MESSAGING_SENDER_ID: 875183279926
-       APP_ID: 1:875183279926:web:1702d658d306080d282d97
+       API_KEY: ${{ vars.API_KEY }}
+       AUTH_DOMAIN: ${{ vars.AUTH_DOMAIN }}
+       PROJECT_ID: ${{ vars.PROJECT_ID }}
+       STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET }}
+       MESSAGING_SENDER_ID: ${{ vars.MESSAGING_SENDER_ID }}
+       APP_ID: ${{ vars.APP_ID }}
