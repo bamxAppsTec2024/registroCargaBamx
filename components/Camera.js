@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { View, Text, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, Alert, Pressable, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome5 } from '@expo/vector-icons';
 
@@ -35,9 +35,9 @@ const Camera = ({ setImageUri, setFileName, imageUri }) => {
     <View >
       <View style={styles.camera}>
           <Text style={styles.label}>Tomar fotografía</Text>
-          <TouchableOpacity onPress={takePhoto}  >
+          <Pressable onPress={takePhoto}  >
             <FontAwesome5 name="camera" size={60} color="#EBB641" />
-          </TouchableOpacity>
+          </Pressable>
       </View>
 
       {loadImage ?
