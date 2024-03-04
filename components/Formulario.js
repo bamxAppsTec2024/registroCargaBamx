@@ -329,7 +329,7 @@ export default function App() {
                 )}
               />
             </View>
-            {/* <View>
+            <View>
               <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
               <Controller
                 control={control}
@@ -337,14 +337,15 @@ export default function App() {
                 render={({ field: { value, onChange, onBlur } }) => (
                   <TextInput
                     placeholder='Cantidad Carga'
+                    placeholderTextColor={'black'} 
                     value={value}
                     onChangeText={(text) => onChange((text))}
                     onBlur={onBlur}
-                    style={{ paddingBottom: 100 }}
+                    style={styles.textInput}
                   />
                 )}
               />
-            </View> */}
+            </View>
 
 
             <View>
@@ -448,6 +449,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginBottom: 10
   },
+  textInput: {
+    margin: 0,
+    height: 50,
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.5,
+    backgroundColor: '#FAFAFA',
+    marginBottom: 10,
+    fontSize: 16
+  },
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -467,6 +477,5 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: '#fb630f',
-
   }
 });
