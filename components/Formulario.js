@@ -133,31 +133,8 @@ export default function App() {
 
 
   async function saveRecord(formData) {
-    const { fecha,
-      conductor,
-      donante,
-      cargaCiega,
-      tipoCarga,
-      donativo,
-      cantidadCarga,
-      hayDesperdicio,
-      porcentajeDesperdicio,
-      razonDesperdicio,
-      uriFoto } = formData;
     try {
-      const docRef = await addDoc(collection(db, "donativo"), {
-        fecha,
-        conductor,
-        donante,
-        cargaCiega,
-        tipoCarga,
-        donativo,
-        cantidadCarga,
-        hayDesperdicio,
-        porcentajeDesperdicio,
-        razonDesperdicio,
-        uriFoto
-      });
+      const docRef = await addDoc(collection(db, "donativo"), formData);
       console.log("document saved correctly", docRef.id);
     } catch (e) {
       console.log(e);
