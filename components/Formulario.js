@@ -10,9 +10,7 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
-  Keyboard,
-  TouchableWithoutFeedback
+  Pressable
 } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import { Controller, useForm } from 'react-hook-form';
@@ -331,25 +329,22 @@ export default function App() {
                 )}
               />
             </View>
-            <View>
-            <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                  <Controller
-                    control={control}
-                    name={'cantidadCarga'}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextInput
-                        placeholder='Cantidad Carga'
-                        value={value}
-                        onChangeText={(text) => onChange((text))}
-                        onBlur={onBlur}
-                        style={{ paddingBottom: 100 }}
-                        keyboardType='numeric'
-                      />
-                    )}
+            {/* <View>
+              <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
+              <Controller
+                control={control}
+                name={'cantidadCarga'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <TextInput
+                    placeholder='Cantidad Carga'
+                    value={value}
+                    onChangeText={(text) => onChange((text))}
+                    onBlur={onBlur}
+                    style={{ paddingBottom: 100 }}
                   />
-              </TouchableWithoutFeedback>
-            </View>
+                )}
+              />
+            </View> */}
 
 
             <View>
@@ -411,18 +406,18 @@ export default function App() {
             />
 
             <View style={styles.buttons}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.button}
                 onPress={clearForm}
               >
                 <Text style={styles.buttonLegend}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 onPress={handleSubmit(onSubmit)}
                 style={[styles.button, styles.sendButton]}
               >
                 <Text style={styles.buttonLegend}>Enviar</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>

@@ -86,7 +86,6 @@ const getCatalogoDropdown = async (nombreCatalogo) => {
     };
     return registro;
   });
-  console.log(catalogo);
   return catalogo;
 };
 
