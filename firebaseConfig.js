@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
   getDownloadURL
 } from "firebase/storage";
-import { getDocs, collection, initializeFirestore } from "firebase/firestore";
+import { getDocs, addDoc, collection, initializeFirestore } from "firebase/firestore";
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID } from '@env';
 // Initialize Firebase
 const firebaseConfig = {
@@ -28,18 +28,6 @@ const fbStorage = getStorage(fbApp);
 const db = initializeFirestore(fbApp, {
   experimentalForceLongPolling: true
 });
-
-// const listFiles = async () => {
-//   const storage = getStorage();
-
-//   // Create a reference under which you want to list
-//   const listRef = ref(storage, "images");
-
-//   // Find all the prefixes and items.
-//   const listResp = await listAll(listRef);
-//   return listResp.items;
-// };
-
 
 const uploadToFirebase = async (uri, name, onProgress) => {
   const fetchResponse = await fetch(uri);
@@ -89,4 +77,13 @@ const getCatalogoDropdown = async (nombreCatalogo) => {
   return catalogo;
 };
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown };
+async function saveRecord(formData) {
+  try {
+    const docRef = await addDoc(collection(db, "donativo"), formData);
+    console.log("document saved correctly", docRef.id);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord };

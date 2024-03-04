@@ -22,8 +22,14 @@ import Camera from './Camera';
 
 import * as ImagePicker from "expo-image-picker";
 
-import { uploadToFirebase, db, getCatalogoDropdown } from '../firebaseConfig';
-import { addDoc, collection } from "firebase/firestore";
+import { uploadToFirebase, getCatalogoDropdown, saveRecord } from '../firebaseConfig';
+
+import {
+  dataCargaCiega,
+  dataHayDesperdicio,
+  dataTipoCarga,
+  crearArregloPorcentajes
+} from '../utilities/utilities';
 
 
 export default function App() {
@@ -110,45 +116,10 @@ export default function App() {
     obtenerCatalogo(watchTipoCarga);
   }, [watchTipoCarga]);
 
-
-  const dataCargaCiega = [
-    { label: 'Sí', value: true },
-    { label: 'No', value: false },
-  ];
-  const dataHayDesperdicio = [
-    { label: 'Sí', value: true },
-    { label: 'No', value: false },
-  ];
-  const dataTipoCarga = [
-    { label: 'Perecedero', value: 'Perecedero' },
-    { label: 'No Perecedero', value: 'No Perecedero' },
-    { label: 'No Comestible', value: 'No Comestible' },
-  ];
-
-  // Función para crear opciones de porcentajes
-  // para campo porcentajes desperdicio
-  const crearArregloPorcentajes = () => {
-    const porcentajes = [];
-    for (let i = 0; i <= 100; i += 10) {
-      // Dar formato para el dropdown
-      porcentajes.push({
-        label: `${i}%`,
-        value: i
-      });
-    }
-    return porcentajes;
-  };
+  // Craer opciones de porcentajes para dropdown 
+  // porcentaje de desperdicio.
   const porcentajes = crearArregloPorcentajes();
 
-
-  async function saveRecord(formData) {
-    try {
-      const docRef = await addDoc(collection(db, "donativo"), formData);
-      console.log("document saved correctly", docRef.id);
-    } catch (e) {
-      console.log(e);
-    }
-  }
 
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data) => {
@@ -337,7 +308,7 @@ export default function App() {
                 render={({ field: { value, onChange, onBlur } }) => (
                   <TextInput
                     placeholder='Cantidad Carga'
-                    placeholderTextColor={'black'} 
+                    placeholderTextColor={'black'}
                     value={value}
                     onChangeText={(text) => onChange((text))}
                     onBlur={onBlur}
