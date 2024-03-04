@@ -15,7 +15,10 @@ const Tabs = () => {
         tabBarInactiveTintColor: '#E2E2E2',
         tabBarStyle: {
           backgroundColor: '#DF405C',
-          height: 90,
+          height: 100,
+        },
+        tabBarLabelStyle: {
+          fontSize: 15,
         },
         headerShown: false,
       }}
@@ -27,7 +30,7 @@ const Tabs = () => {
           tabBarIcon: ({ focused }) => (
             <Octicons
               name="diff-added"
-              size={24}
+              size={35}
               color={focused ? '#FFD600' : '#E2E2E2'}
             />
           )
@@ -40,7 +43,7 @@ const Tabs = () => {
           tabBarIcon: ({ focused }) => (
             <MaterialIcons
               name="history"
-              size={24}
+              size={40}
               color={focused ? '#FFD600' : '#E2E2E2'}
             />
           )
