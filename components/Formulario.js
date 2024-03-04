@@ -10,7 +10,9 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import { Controller, useForm } from 'react-hook-form';
@@ -35,6 +37,20 @@ export default function App() {
   const [razonesDesperdicio, setRazonesDesperdicio] = useState([]);
   const [donativos, setDonativos] = useState([]);
 
+  const defaultValuesForm = {
+    fecha: new Date(),
+    conductor: '',
+    donante: '',
+    cargaCiega: false,
+    tipoCarga: 'Perecedero',
+    donativo: '',
+    cantidadCarga: '',
+    hayDesperdicio: true,
+    porcentajeDesperdicio: '',
+    razonDesperdicio: '',
+    uriFoto: ''
+  };
+
   // Obtener opciones de dropdown al consultar catálogos de base de datps
   const getStateValues = async () => {
     try {
@@ -55,20 +71,8 @@ export default function App() {
     getStateValues();
   }, []);
 
-  const { control, handleSubmit, watch } = useForm({
-    defaultValues: {
-      fecha: new Date(),
-      conductor: '',
-      donante: '',
-      cargaCiega: false,
-      tipoCarga: '',
-      donativo: '',
-      cantidadCarga: '',
-      hayDesperdicio: true,
-      porcentajeDesperdicio: '',
-      razonDesperdicio: '',
-      uriFoto: ''
-    }
+  const { control, handleSubmit, watch, reset } = useForm({
+    defaultValues: defaultValuesForm
   });
 
   // Observar cada vez que el valor de tipo de carga cambie
@@ -82,6 +86,13 @@ export default function App() {
     'Perecedero': 'perecedero',
     'No Perecedero': 'noPerecedero',
     'No Comestible': 'noComestible',
+  };
+
+  const clearForm = () => {
+    reset(defaultValuesForm);
+    // El imageUri es un state obtenido del componente Camera, por ello
+    // no se hace reset con el reset de react hook form.
+    setImageUri('');
   };
 
   // Función que dependiendo del valor del tipo de carga,
@@ -133,36 +144,14 @@ export default function App() {
 
 
   async function saveRecord(formData) {
-    const { fecha,
-      conductor,
-      donante,
-      cargaCiega,
-      tipoCarga,
-      donativo,
-      cantidadCarga,
-      hayDesperdicio,
-      porcentajeDesperdicio,
-      razonDesperdicio,
-      uriFoto } = formData;
     try {
-      const docRef = await addDoc(collection(db, "donativo"), {
-        fecha,
-        conductor,
-        donante,
-        cargaCiega,
-        tipoCarga,
-        donativo,
-        cantidadCarga,
-        hayDesperdicio,
-        porcentajeDesperdicio,
-        razonDesperdicio,
-        uriFoto
-      });
+      const docRef = await addDoc(collection(db, "donativo"), formData);
       console.log("document saved correctly", docRef.id);
     } catch (e) {
       console.log(e);
     }
   }
+
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data) => {
     data.conductor = data.conductor.value;
@@ -184,7 +173,8 @@ export default function App() {
         console.log(v)
       );
       console.log(uploadResp);
-      saveRecord(data);
+      saveRecord(data); // Guardar record en la base de datos
+      clearForm(); // Limpiar los campos del formulario
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
@@ -194,8 +184,6 @@ export default function App() {
   const allowOnlyNumber = (value) => {
     return value.replace(/[^0-9]/g, '');
   };
-
-
 
   // Verificar si la aplicación tiene acceso a la cámara del celular
   if (permission?.status !== ImagePicker.PermissionStatus.GRANTED) {
@@ -344,21 +332,26 @@ export default function App() {
               />
             </View>
             <View>
-              <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
-              <Controller
-                control={control}
-                name={'cantidadCarga'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <TextInput
-                    placeholder='Cantidad carga'
-                    value={value}
-                    onChangeText={(text) => onChange((text))}
-                    onBlur={onBlur}
-                    style={{ paddingBottom: 100 }}
+            <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                  <Controller
+                    control={control}
+                    name={'cantidadCarga'}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextInput
+                        placeholder='Cantidad Carga'
+                        value={value}
+                        onChangeText={(text) => onChange((text))}
+                        onBlur={onBlur}
+                        style={{ paddingBottom: 100 }}
+                        keyboardType='numeric'
+                      />
+                    )}
                   />
-                )}
-              />
+              </TouchableWithoutFeedback>
             </View>
+
+
             <View>
               <Text style={styles.label}>¿Hay Desperdicio?</Text>
               <Controller
@@ -420,6 +413,7 @@ export default function App() {
             <View style={styles.buttons}>
               <TouchableOpacity
                 style={styles.button}
+                onPress={clearForm}
               >
                 <Text style={styles.buttonLegend}>Cancelar</Text>
               </TouchableOpacity>
@@ -461,7 +455,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     marginTop: 50
   },
   button: {
@@ -478,6 +472,6 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: '#fb630f',
-    
+
   }
 });

@@ -1,9 +1,15 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const Camera = ({ setImageUri, setFileName, imageUri }) => {
+  const [ loadImage, setLoadImage ] = useState(false);
+  useEffect(() => {
+    setLoadImage(imageUri != '');
+  }, [imageUri]);
+
   const takePhoto = async () => {
     try {
       const cameraResp = await ImagePicker.launchCameraAsync({
@@ -34,7 +40,7 @@ const Camera = ({ setImageUri, setFileName, imageUri }) => {
           </TouchableOpacity>
       </View>
 
-      {imageUri ?
+      {loadImage ?
         <View>
           <Image source={{ uri: imageUri }} style={styles.photo} />
         </View>
