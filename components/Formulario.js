@@ -1,6 +1,17 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import { Button, Alert, Text, TextInput, View, KeyboardAvoidingView, SafeAreaView, ScrollView, Image } from 'react-native';
+import {
+  Button,
+  Alert,
+  Text,
+  TextInput,
+  View,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import { Controller, useForm } from 'react-hook-form';
 
@@ -13,7 +24,6 @@ import * as ImagePicker from "expo-image-picker";
 
 import { uploadToFirebase, db, getCatalogoDropdown } from '../firebaseConfig';
 import { addDoc, collection } from "firebase/firestore";
-import { FontAwesome } from '@expo/vector-icons';
 
 
 export default function App() {
@@ -26,7 +36,7 @@ export default function App() {
   const [donativos, setDonativos] = useState([]);
 
   // Obtener opciones de dropdown al consultar catálogos de base de datps
-  useEffect(async () => {
+  const getStateValues = async () => {
     try {
       const arrConductores = await getCatalogoDropdown('conductor');
       setConductores(arrConductores);
@@ -39,6 +49,10 @@ export default function App() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  useEffect(() => {
+    getStateValues();
   }, []);
 
   const { control, handleSubmit, watch } = useForm({
@@ -186,10 +200,10 @@ export default function App() {
   // Verificar si la aplicación tiene acceso a la cámara del celular
   if (permission?.status !== ImagePicker.PermissionStatus.GRANTED) {
     return (
-      <View >
-        <Text>Permiso de la cámara no está habilitado</Text>
+      <View>
+        <Text style={styles.permissionMessage}>Permiso de la cámara no está habilitado</Text>
         <StatusBar style="auto" />
-        <Button title="Solicitar permiso" onPress={requestPermission}></Button>
+        <Button title="Solicitar permiso" onPress={requestPermission} style={{ justifyContent: 'center' }}></Button>
       </View>
     );
   }
@@ -203,210 +217,267 @@ export default function App() {
           // style={{ flex: 1 }}
           enabled
         >
-          <Button
-            title='Submit'
-            onPress={handleSubmit(onSubmit)}
-          />
-          <View>
-            <Text>Fecha</Text>
-            <Controller
-              control={control}
-              name={'fecha'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={new Date()}
-                  mode={'date'}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
+          <View style={styles.container}>
+            <View style={styles.dateTime}>
+              <View >
+                <Text style={styles.label}>Fecha</Text>
+                <View style={styles.dateView}>
+                  <Controller
+                    control={control}
+                    name={'fecha'}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={new Date()}
+                        mode={'date'}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
+                  />
+                </View>
+              </View>
 
-          <View>
-            <Text>Hora</Text>
-            <Controller
-              control={control}
-              name={'hora'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={new Date()}
-                  mode={'time'}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-          <View>
-            <Text>Conductor</Text>
-            <Controller
-              control={control}
-              name={'conductor'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DropdownComponent
-                  data={conductores}
-                  placeholder='Conductor'
-                  secureTextEntry
-                  val={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Text>Donante</Text>
-            <Controller
-              control={control}
-              name={'donante'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DropdownComponent
-                  data={donantes}
-                  placeholder='Donante'
-                  secureTextEntry
-                  val={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Text>¿Carga Ciega?</Text>
-            <Controller
-              control={control}
-              name={'cargaCiega'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <Radio
-                  data={dataCargaCiega}
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-          <View>
-            <Text>Tipo de Carga</Text>
-            <Controller
-              control={control}
-              name={'tipoCarga'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <Radio
-                  data={dataTipoCarga}
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Text>Donativo</Text>
-            <Controller
-              control={control}
-              name={'donativo'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DropdownComponent
-                  data={donativos}
-                  placeholder='Donativo'
-                  secureTextEntry
-                  val={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-          <View>
-            <Text>Cantidad Carga</Text>
-            <Controller
-              control={control}
-              name={'cantidadCarga'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  placeholder='Cantidad carga'
-                  value={value}
-                  onChangeText={(text) => onChange((text))}
-                  onBlur={onBlur}
-                  style={{ paddingBottom: 100 }}
-                />
-              )}
-            />
-          </View>
-          <View>
-            <Text>¿Hay Desperdicio?</Text>
-            <Controller
-              control={control}
-              name={'hayDesperdicio'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <Radio
-                  data={dataHayDesperdicio}
-                  value={value}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-          <View>
-            <Text>Porcentaje Desperdicio</Text>
-            <Controller
-              control={control}
-              name={'porcentajeDesperdicio'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DropdownComponent
-                  data={porcentajes}
-                  placeholder='Porcentaje Desperdicio'
-                  secureTextEntry
-                  val={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-
-          <View>
-            <Text>Razón Desperdicio</Text>
-            <Controller
-              control={control}
-              name={'razonDesperdicio'}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <DropdownComponent
-                  data={razonesDesperdicio}
-                  placeholder='Razón Desperdicio'
-                  secureTextEntry
-                  val={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </View>
-
-          <Camera
-            setImageUri={setImageUri}
-            setFileName={setFileName}
-          />
-
-          {imageUri &&
-            <View>
-              <Text>La fotografía se ha subido</Text>
-              <FontAwesome name="image" size={24} color="#B1B0B0" />
-              <Image source={{ uri: imageUri }} style={{ height: 50, width: 50 }} />
+              <View>
+                <Text style={styles.label}>Hora</Text>
+                <View style={styles.dateView}>
+                  <Controller
+                    control={control}
+                    name={'hora'}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={new Date()}
+                        mode={'time'}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
+                  />
+                </View>
+              </View>
             </View>
-          }
+            <View>
+              <Text style={styles.label}>Conductor</Text>
+              <Controller
+                control={control}
+                name={'conductor'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={conductores}
+                    placeholder='Conductor'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
 
+            <View>
+              <Text style={styles.label}>Donante</Text>
+              <Controller
+                control={control}
+                name={'donante'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={donantes}
+                    placeholder='Donante'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>¿Carga Ciega?</Text>
+              <Controller
+                control={control}
+                name={'cargaCiega'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Radio
+                    data={dataCargaCiega}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    horizontalOptions={true}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <Text style={styles.label}>Tipo de Carga</Text>
+              <Controller
+                control={control}
+                name={'tipoCarga'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Radio
+                    data={dataTipoCarga}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    horizontalOptions={false}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>Donativo</Text>
+              <Controller
+                control={control}
+                name={'donativo'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={donativos}
+                    placeholder='Donativo'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
+              <Controller
+                control={control}
+                name={'cantidadCarga'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <TextInput
+                    placeholder='Cantidad carga'
+                    value={value}
+                    onChangeText={(text) => onChange((text))}
+                    onBlur={onBlur}
+                    style={{ paddingBottom: 100 }}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <Text style={styles.label}>¿Hay Desperdicio?</Text>
+              <Controller
+                control={control}
+                name={'hayDesperdicio'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Radio
+                    data={dataHayDesperdicio}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    horizontalOptions={true}
+                  />
+                )}
+              />
+            </View>
+            <View>
+              <Text style={styles.label}>Porcentaje Desperdicio</Text>
+              <Controller
+                control={control}
+                name={'porcentajeDesperdicio'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={porcentajes}
+                    placeholder='Porcentaje Desperdicio'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>Razón Desperdicio</Text>
+              <Controller
+                control={control}
+                name={'razonDesperdicio'}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={razonesDesperdicio}
+                    placeholder='Razón Desperdicio'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+
+            <Camera
+              imageUri={imageUri}
+              setImageUri={setImageUri}
+              setFileName={setFileName}
+            />
+
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={styles.button}
+              >
+                <Text style={styles.buttonLegend}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSubmit(onSubmit)}
+                style={[styles.button, styles.sendButton]}
+              >
+                <Text style={styles.buttonLegend}>Enviar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView >
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 350
+  },
+  permissionMessage: {
+    fontSize: 20,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#474545',
+    marginBottom: 10
+  },
+  dateTime: {
+    flexDirection: 'row',
+    gap: 20
+  },
+  dateView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 10
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent:'space-between',
+    marginTop: 50
+  },
+  button: {
+    padding: 15,
+    backgroundColor: '#fb630f',
+    borderRadius: 10,
+    width: 150
+  },
+  buttonLegend: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  sendButton: {
+    backgroundColor: '#fb630f',
+    
+  }
+});

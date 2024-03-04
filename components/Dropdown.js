@@ -19,13 +19,10 @@ const DropdownComponent = ({ data, placeholder, secureTextEntry, val, onChangeTe
       labelField="label"
       valueField="value"
       placeholder={placeholder}
-      searchPlaceholder="Search..."
+      searchPlaceholder="Buscar..."
       value={val}
       secureTextEntry={secureTextEntry}
       onChange={onChangeText}
-      renderLeftIcon={() => (
-        <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-      )}
       onBlur={onBlur}
     />
   );
@@ -35,10 +32,12 @@ export default DropdownComponent;
 
 const styles = StyleSheet.create({
   dropdown: {
-    margin: 16,
+    margin: 0,
     height: 50,
     borderBottomColor: 'gray',
     borderBottomWidth: 0.5,
+    backgroundColor: '#FAFAFA',
+    marginBottom: 10
   },
   icon: {
     marginRight: 5,
