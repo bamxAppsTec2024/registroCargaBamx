@@ -92,4 +92,17 @@ async function saveRecord(formData) {
   }
 }
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, getData };
+// Función para añadir nuevo record a los catálogos
+const createRecordCatalogo = async (nombreCatalogo, valor) => {
+  try {
+    const docRef = await addDoc(collection(db, nombreCatalogo), {
+      nombre: valor
+    });
+    console.log("document saved correctly", docRef.id);
+  } catch (e) {
+    console.log(e);
+  }
+
+};
+
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, getData };
