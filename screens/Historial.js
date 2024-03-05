@@ -14,7 +14,7 @@ import { Searchbar } from 'react-native-paper';
 import Tabla from "../components/Tabla";
 
 const Historial = () => {
-/* 
+
 const [donativo, setDonativo] = React.useState([]);
 
 React.useEffect(() => {
@@ -42,7 +42,6 @@ React.useEffect(() => {
 
   return unsuscribe;
 }, []);
-*/
   
 
 
@@ -87,7 +86,12 @@ React.useEffect(() => {
           <Pressable style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
-        </View>  
+        </View>
+        <ScrollView>
+        {donativo.map((donativo) => 
+          (<Tabla {...donativo}/>)
+        )}
+      </ScrollView>  
       </View>
     </SafeAreaView>
   );

@@ -15,10 +15,12 @@ const Tabs = () => {
         tabBarInactiveTintColor: '#E2E2E2',
         tabBarStyle: {
           backgroundColor: '#DF405C',
-          height: 100,
+          height: 70,
+          
         },
         tabBarLabelStyle: {
-          fontSize: 15,
+          fontSize: 14,
+          paddingBottom:10
         },
         headerShown: false,
       }}
@@ -40,7 +42,7 @@ const Tabs = () => {
         name="Historial"
         component={Historial}
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({focused}) => (
             <MaterialIcons
               name="history"
               size={40}
