@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
   getDownloadURL
 } from "firebase/storage";
-import { getDocs, addDoc, collection, initializeFirestore } from "firebase/firestore";
+import { getDocs, addDoc, collection, initializeFirestore, getFirestore } from "firebase/firestore";
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID } from '@env';
 // Initialize Firebase
 const firebaseConfig = {
@@ -16,6 +16,10 @@ const firebaseConfig = {
   messagingSenderId: MESSAGING_SENDER_ID,
   appId: APP_ID
 };
+
+console.log(
+  { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID }
+);
 
 console.log(firebaseConfig);
 
@@ -28,6 +32,8 @@ const fbStorage = getStorage(fbApp);
 const db = initializeFirestore(fbApp, {
   experimentalForceLongPolling: true
 });
+
+const getData = getFirestore();
 
 const uploadToFirebase = async (uri, name, onProgress) => {
   const fetchResponse = await fetch(uri);
@@ -99,4 +105,4 @@ const createRecordCatalogo = async (nombreCatalogo, valor) => {
 
 };
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo };
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, getData };
