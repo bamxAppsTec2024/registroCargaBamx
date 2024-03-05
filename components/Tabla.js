@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 
 export default function Tabla({
   id,
@@ -17,16 +17,9 @@ export default function Tabla({
 }) {
     return (
         <View styles={styles.tableContainer}>
-            <Text>{cantidadCarga}</Text>
-            <Text>{cargaCiega}</Text>
             <Text>{conductor}</Text>
             <Text>{donante}</Text>
             <Text>{donativo}</Text>
-            <Text>{fecha}</Text>
-            <Text>{hayDesperdicio}</Text>
-            <Text>{porcentajeDesperdicio}</Text>
-            <Text>{razonDesperdicio}</Text>
-            <Text>{tipoCarga}</Text>
             <Text>{uriFoto}</Text>
         </View>
     )

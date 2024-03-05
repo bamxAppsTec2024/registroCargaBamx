@@ -1,20 +1,26 @@
-import React from 'react';
-import { SafeAreaView, View, Text } from 'react-native';
-import { getData } from '../firebaseConfig';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { useEffect, useState } from 'react/cjs/react.production.min';
-
+import React from "react";
+import { SafeAreaView, View, Text, ScrollView } from "react-native";
+import { getData } from "../firebaseConfig";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { useEffect, useState } from "react/cjs/react.production.min";
+import Tabla from "../components/Tabla";
 
 const Historial = () => {
-  const [donativo, setDonativo] = useState();
+  const [donativo, setDonativo] = React.useState([]);
 
-  useEffect(() => {
-    const collectionRef = collection(getData, 'donativo');
-    const q = query(collectionRef, orderBy('fecha', 'desc'));
+  React.useEffect(() => {
+    const collectionRef = collection(getData, "donativo");
+    const q = query(collectionRef, where("cantidadCarga", ">", "0"));
 
-    const unsuscribe = onSnapshot(q, querySnapshot => {
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
-        querySnapshot.docs.map(doc => ({
+        querySnapshot.docs.map((doc) => ({
           id: doc.id,
           cantidadCarga: doc.data().cantidadCarga,
           cargaCiega: doc.data().cargaCiega,
@@ -26,19 +32,21 @@ const Historial = () => {
           porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
           razonDesperdicio: doc.data().razonDesperdicio,
           tipoCarga: doc.data().tipoCarga,
-          uriFoto: doc.data().uriFoto
-        }))
-      )
-    });
+          uriFoto: doc.data().uriFoto,
+        })
+        )
+      )});
 
     return unsuscribe;
   }, []);
 
   return (
     <SafeAreaView>
-      <View>
-        {donativo.map(donativo => <Tabla key={donativo.id} {...donativo}/>)}
-      </View>
+      <ScrollView>
+        {donativo.map((donativo) => 
+          (<Tabla {...donativo}/>)
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
