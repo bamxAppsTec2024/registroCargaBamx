@@ -17,7 +17,6 @@ import { Controller, useForm } from 'react-hook-form';
 
 import DropdownComponent from './Dropdown';
 import Radio from './Radio';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Camera from './Camera';
 import AddOtroField from './AddOtroField';
 import { DatePickerInput } from 'react-native-paper-dates';
@@ -184,6 +183,7 @@ export default function App() {
     // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
     delete data.hora;
     delete data.nuevoConductor;
+    delete data.nuevoDonante;
     delete data.nuevoRazon;
     delete data.nuevoDonativo;
   };
