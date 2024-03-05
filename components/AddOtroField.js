@@ -17,6 +17,8 @@ const AddOtroField = ({showOtroField, placeholder, field, control}) => {
                 value={value}
                 onChangeText={(text) => onChange((text))}
                 onBlur={onBlur}
+                style={styles.textInput}
+                placeholderTextColor={'black'}
               />
             )}
           />
@@ -32,6 +34,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#474545',
     marginBottom: 10
+  },
+  textInput: {
+    margin: 0,
+    height: 50,
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.5,
+    backgroundColor: '#FAFAFA',
+    marginBottom: 10,
+    fontSize: 16
   },
 });
 
