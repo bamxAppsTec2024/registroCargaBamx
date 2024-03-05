@@ -19,10 +19,11 @@ import DropdownComponent from './Dropdown';
 import Radio from './Radio';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Camera from './Camera';
+import AddOtroField from './AddOtroField';
 
 import * as ImagePicker from "expo-image-picker";
 
-import { uploadToFirebase, getCatalogoDropdown, saveRecord } from '../firebaseConfig';
+import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo } from '../firebaseConfig';
 
 import {
   dataCargaCiega,
@@ -40,6 +41,8 @@ export default function App() {
   const [donantes, setDonantes] = useState([]);
   const [razonesDesperdicio, setRazonesDesperdicio] = useState([]);
   const [donativos, setDonativos] = useState([]);
+  const [showOtroConductor, setShowOtroConductor] = useState(false);
+  const [showOtroDonante, setShowOtroDonante] = useState(false);
 
   const defaultValuesForm = {
     fecha: new Date(),
@@ -120,6 +123,19 @@ export default function App() {
   // porcentaje de desperdicio.
   const porcentajes = crearArregloPorcentajes();
 
+  
+
+  const watchConductor = watch('conductor');
+  useEffect(() => {
+    const { value } = watchConductor;
+    setShowOtroConductor(value === 'Otro');
+  }, [watchConductor]);
+  const watchDonante = watch('donante');
+  
+  useEffect(() => {
+    const { value } = watchDonante;
+    setShowOtroDonante(value === 'Otro');
+  }, [watchDonante]);
 
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data) => {
@@ -130,8 +146,19 @@ export default function App() {
     data.razonDesperdicio = data.razonDesperdicio.value;
     data.uriFoto = imageUri;
 
+    if (data.nuevoConductor) {
+      createRecordCatalogo('conductor', data.nuevoConductor);
+      data.conductor = data.nuevoConductor;
+    }
+
+    if (data.nuevoDonante) {
+      createRecordCatalogo('donante', data.nuevoDonante);
+      data.donante = data.nuevoDonante;
+    }
+
     // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
     delete data.hora;
+    delete data.nuevoConductor;
   };
 
   const onSubmit = async (data) => {
@@ -232,6 +259,13 @@ export default function App() {
               />
             </View>
 
+            <AddOtroField
+              showOtroField={showOtroConductor}
+              placeholder='Agregar Conductor'
+              field='Conductor'
+              control={control}
+            />
+
             <View>
               <Text style={styles.label}>Donante</Text>
               <Controller
@@ -249,6 +283,13 @@ export default function App() {
                 )}
               />
             </View>
+
+            <AddOtroField
+              showOtroField={showOtroDonante}
+              placeholder='Agregar Donante'
+              field='Donante'
+              control={control}
+            />
 
             <View>
               <Text style={styles.label}>¿Carga Ciega?</Text>
