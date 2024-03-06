@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import {
-  Button,
   Alert,
   Text,
   TextInput,
@@ -12,16 +11,13 @@ import {
   StyleSheet,
   Pressable
 } from 'react-native';
-import { StatusBar } from "expo-status-bar";
+
 import { Controller, useForm } from 'react-hook-form';
 
 import DropdownComponent from './Dropdown';
 import Radio from './Radio';
 import Camera from './Camera';
-import AddOtroField from './AddOtroField';
-import { DatePickerInput } from 'react-native-paper-dates';
-
-import * as ImagePicker from "expo-image-picker";
+import RequestCameraPermission from './RequestCameraPermission';
 
 import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo } from '../firebaseConfig';
 
@@ -34,7 +30,6 @@ import {
 
 
 export default function App() {
-  const [permission, requestPermission] = ImagePicker.useCameraPermissions();
   const [imageUri, setImageUri] = useState('');
   const [fileName, setFileName] = useState('');
   const [conductores, setConductores] = useState([]);
@@ -45,18 +40,23 @@ export default function App() {
   const [showOtroDonante, setShowOtroDonante] = useState(false);
   const [showOtroDonativo, setShowOtroDonativo] = useState(false);
   const [showOtroRazon, setShowOtroRazon] = useState(false);
+  const [cameraError, setCameraError] = useState(false);
 
   const defaultValuesForm = {
     fecha: new Date(),
     conductor: '',
+    nuevoConductor: '',
     donante: '',
+    nuevoDonante: '',
     cargaCiega: false,
     tipoCarga: 'Perecedero',
     donativo: '',
+    nuevoDonativo: '',
     cantidadCarga: '',
     hayDesperdicio: true,
     porcentajeDesperdicio: '',
     razonDesperdicio: '',
+    nuevoRazon: '',
     uriFoto: ''
   };
 
@@ -80,7 +80,7 @@ export default function App() {
     getStateValues();
   }, []);
 
-  const { control, handleSubmit, watch, reset } = useForm({
+  const { control, handleSubmit, watch, reset, formState: { errors } } = useForm({
     defaultValues: defaultValuesForm
   });
 
@@ -151,6 +151,7 @@ export default function App() {
     setShowOtroRazon(value === 'Otro');
   }, [watchRazon]);
 
+  const watchCargaCiega = watch('cargaCiega');
 
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data) => {
@@ -188,14 +189,42 @@ export default function App() {
     delete data.nuevoDonativo;
   };
 
+  useEffect(() => {
+    if (imageUri !== '' && !watchCargaCiega) {
+      setCameraError(false);
+    }
+  }, [imageUri]);
+
+
   const onSubmit = async (data) => {
+    // Si la carga no es ciega, se muestra errror si falta la foto
+    if (imageUri === '' && !watchCargaCiega) {
+      setCameraError(true);
+      return;
+    }
+
     estructurarData(data);
+
+    // Si la carga es ciega, borrar valores predeterminados 
+    // de los radios y hacer que donativo no sea undefined
+    // porque se genera a partir del tipo de carga
+    if(watchCargaCiega) {
+      data.donativo = '';
+      data.tipoCarga = '';
+      data.hayDesperdicio = '';
+      data.porcentajeDesperdicio = '';
+      data.razonDesperdicio = '';
+    }
+
     console.log(data);
     try {
-      const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
-        console.log(v)
-      );
-      console.log(uploadResp);
+      // Si la carga no es ciega, subir foto
+      if (!watchCargaCiega) {
+        const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
+          console.log(v)
+        );
+        console.log(uploadResp);
+      }
       saveRecord(data); // Guardar record en la base de datos
       clearForm(); // Limpiar los campos del formulario
     } catch (e) {
@@ -207,16 +236,8 @@ export default function App() {
     return value.replace(/[^0-9]/g, '');
   };
 
-  // Verificar si la aplicación tiene acceso a la cámara del celular
-  if (permission?.status !== ImagePicker.PermissionStatus.GRANTED) {
-    return (
-      <View>
-        <Text style={styles.permissionMessage}>Permiso de la cámara no está habilitado</Text>
-        <StatusBar style="auto" />
-        <Button title="Solicitar permiso" onPress={requestPermission} style={{ justifyContent: 'center' }}></Button>
-      </View>
-    );
-  }
+  // Componente que solicita permiso a la cámara
+  <RequestCameraPermission />;
 
   return (
     <SafeAreaView>
@@ -233,6 +254,9 @@ export default function App() {
               <Controller
                 control={control}
                 name={'conductor'}
+                rules={{
+                  required: { value: true, message: "Conductor es obligatorio" },
+                }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <DropdownComponent
                     data={conductores}
@@ -245,19 +269,50 @@ export default function App() {
                 )}
               />
             </View>
+            {errors.conductor &&
+              <Text style={styles.error}>
+                {errors.conductor.message}
+              </Text>
+            }
 
-            <AddOtroField
-              showOtroField={showOtroConductor}
-              placeholder='Agregar Conductor'
-              field='Conductor'
-              control={control}
-            />
+            {showOtroConductor &&
+              <View>
+                <Text style={styles.label}>Agregar Conductor</Text>
+                <Controller
+                  control={control}
+                  name='nuevoConductor'
+                  rules={{
+                    required: { value: true, message: "Agregar conductor es obligatorio" },
+                  }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextInput
+                      placeholder='Agregar Conductor'
+                      value={value}
+                      onChangeText={(text) => onChange((text))}
+                      onBlur={onBlur}
+                      style={styles.textInput}
+                      placeholderTextColor={'black'}
+                    />
+                  )}
+                />
+              </View>
+            }
+
+            {showOtroConductor && errors.nuevoConductor &&
+              <Text style={styles.error}>
+                {errors.nuevoConductor.message}
+              </Text>
+            }
+
 
             <View>
               <Text style={styles.label}>Donante</Text>
               <Controller
                 control={control}
                 name={'donante'}
+                rules={{
+                  required: { value: true, message: "Donante es obligatorio" },
+                }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <DropdownComponent
                     data={donantes}
@@ -270,13 +325,40 @@ export default function App() {
                 )}
               />
             </View>
+            {errors.donante &&
+              <Text style={styles.error}>
+                {errors.donante.message}
+              </Text>
+            }
 
-            <AddOtroField
-              showOtroField={showOtroDonante}
-              placeholder='Agregar Donante'
-              field='Donante'
-              control={control}
-            />
+            {showOtroDonante &&
+              <View>
+                <Text style={styles.label}>Agregar Donante</Text>
+                <Controller
+                  control={control}
+                  name='nuevoDonante'
+                  rules={{
+                    required: { value: true, message: "Agregar donante es obligatorio" },
+                  }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextInput
+                      placeholder='Agregar Donante'
+                      value={value}
+                      onChangeText={(text) => onChange((text))}
+                      onBlur={onBlur}
+                      style={styles.textInput}
+                      placeholderTextColor={'black'}
+                    />
+                  )}
+                />
+              </View>
+            }
+
+            {showOtroDonante && errors.nuevoDonante &&
+              <Text style={styles.error}>
+                {errors.nuevoDonante.message}
+              </Text>
+            }
 
             <View>
               <Text style={styles.label}>¿Carga Ciega?</Text>
@@ -294,130 +376,220 @@ export default function App() {
                 )}
               />
             </View>
-            <View>
-              <Text style={styles.label}>Tipo de Carga</Text>
-              <Controller
-                control={control}
-                name={'tipoCarga'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <Radio
-                    data={dataTipoCarga}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    horizontalOptions={false}
+            {
+              !watchCargaCiega &&
+              <View>
+                <View>
+                  <Text style={styles.label}>Tipo de Carga</Text>
+                  <Controller
+                    control={control}
+                    name={'tipoCarga'}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Radio
+                        data={dataTipoCarga}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        horizontalOptions={false}
+                      />
+                    )}
                   />
-                )}
-              />
-            </View>
+                </View>
 
-            <View>
-              <Text style={styles.label}>Donativo</Text>
-              <Controller
-                control={control}
-                name={'donativo'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <DropdownComponent
-                    data={donativos}
-                    placeholder='Donativo'
-                    secureTextEntry
-                    val={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
+                <View>
+                  <Text style={styles.label}>Donativo</Text>
+                  <Controller
+                    control={control}
+                    name={'donativo'}
+                    rules={{
+                      required: { value: true, message: "Donativo es obligatorio" },
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <DropdownComponent
+                        data={donativos}
+                        placeholder='Donativo'
+                        secureTextEntry
+                        val={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
                   />
-                )}
-              />
+                </View>
+                {errors.donativo &&
+                  <Text style={styles.error}>
+                    {errors.donativo.message}
+                  </Text>
+                }
 
-              <AddOtroField
-                showOtroField={showOtroDonativo}
-                placeholder='Agregar Donativo'
-                field='Donativo'
-                control={control}
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
-              <Controller
-                control={control}
-                name={'cantidadCarga'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <TextInput
-                    placeholder='Cantidad Carga'
-                    placeholderTextColor={'black'}
-                    value={value}
-                    onChangeText={(text) => onChange((text))}
-                    onBlur={onBlur}
-                    style={styles.textInput}
+                {showOtroDonativo &&
+                  <View>
+                    <Text style={styles.label}>Agregar Donativo</Text>
+                    <Controller
+                      control={control}
+                      name='nuevoDonativo'
+                      rules={{
+                        required: { value: true, message: "Agregar donativo es obligatorio" },
+                      }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <TextInput
+                          placeholder='Agregar Donativo'
+                          value={value}
+                          onChangeText={(text) => onChange((text))}
+                          onBlur={onBlur}
+                          style={styles.textInput}
+                          placeholderTextColor={'black'}
+                        />
+                      )}
+                    />
+                  </View>
+                }
+
+                {showOtroDonativo && errors.nuevoDonativo &&
+                  <Text style={styles.error}>
+                    {errors.nuevoDonativo.message}
+                  </Text>
+                }
+
+                <View>
+                  <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
+                  <Controller
+                    control={control}
+                    name={'cantidadCarga'}
+                    rules={{
+                      required: { value: true, message: "Cantidad carga es obligatoria" },
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextInput
+                        placeholder='Cantidad Carga'
+                        placeholderTextColor={'black'}
+                        value={value}
+                        onChangeText={(text) => onChange((text))}
+                        onBlur={onBlur}
+                        style={styles.textInput}
+                      />
+                    )}
                   />
-                )}
-              />
-            </View>
+                </View>
+                {errors.cantidadCarga &&
+                  <Text style={styles.error}>
+                    {errors.cantidadCarga.message}
+                  </Text>
+                }
 
-
-            <View>
-              <Text style={styles.label}>¿Hay Desperdicio?</Text>
-              <Controller
-                control={control}
-                name={'hayDesperdicio'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <Radio
-                    data={dataHayDesperdicio}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    horizontalOptions={true}
+                <View>
+                  <Text style={styles.label}>¿Hay Desperdicio?</Text>
+                  <Controller
+                    control={control}
+                    name={'hayDesperdicio'}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Radio
+                        data={dataHayDesperdicio}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        horizontalOptions={true}
+                      />
+                    )}
                   />
-                )}
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Porcentaje Desperdicio</Text>
-              <Controller
-                control={control}
-                name={'porcentajeDesperdicio'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <DropdownComponent
-                    data={porcentajes}
-                    placeholder='Porcentaje Desperdicio'
-                    secureTextEntry
-                    val={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
+                </View>
+                <View>
+                  <Text style={styles.label}>Porcentaje Desperdicio</Text>
+                  <Controller
+                    control={control}
+                    name={'porcentajeDesperdicio'}
+                    rules={{
+                      required: { value: true, message: "Porcentaje desperdicio es obligatorio" },
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <DropdownComponent
+                        data={porcentajes}
+                        placeholder='Porcentaje Desperdicio'
+                        secureTextEntry
+                        val={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
                   />
-                )}
-              />
-            </View>
+                </View>
+                {errors.porcentajeDesperdicio &&
+                  <Text style={styles.error}>
+                    {errors.porcentajeDesperdicio.message}
+                  </Text>
+                }
 
-            <View>
-              <Text style={styles.label}>Razón Desperdicio</Text>
-              <Controller
-                control={control}
-                name={'razonDesperdicio'}
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <DropdownComponent
-                    data={razonesDesperdicio}
-                    placeholder='Razón Desperdicio'
-                    secureTextEntry
-                    val={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
+                <View>
+                  <Text style={styles.label}>Razón Desperdicio</Text>
+                  <Controller
+                    control={control}
+                    name={'razonDesperdicio'}
+                    rules={{
+                      required: { value: true, message: "Razón desperdicio es obligatoria" },
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <DropdownComponent
+                        data={razonesDesperdicio}
+                        placeholder='Razón Desperdicio'
+                        secureTextEntry
+                        val={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                      />
+                    )}
                   />
-                )}
-              />
-            </View>
+                </View>
+                {errors.razonDesperdicio &&
+                  <Text style={styles.error}>
+                    {errors.razonDesperdicio.message}
+                  </Text>
+                }
 
-            <AddOtroField
-              showOtroField={showOtroRazon}
-              placeholder='Agregar Razón'
-              field='Razon'
-              control={control}
-            />
+                {showOtroRazon &&
+                  <View>
+                    <Text style={styles.label}>Agregar Razón</Text>
+                    <Controller
+                      control={control}
+                      name='nuevoRazon'
+                      rules={{
+                        required: { value: true, message: "Agregar razón es obligatorio" },
+                      }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <TextInput
+                          placeholder='Agregar Razón'
+                          value={value}
+                          onChangeText={(text) => onChange((text))}
+                          onBlur={onBlur}
+                          style={styles.textInput}
+                          placeholderTextColor={'black'}
+                        />
+                      )}
+                    />
+                  </View>
+                }
 
-            <Camera
-              imageUri={imageUri}
-              setImageUri={setImageUri}
-              setFileName={setFileName}
-            />
+                {showOtroRazon && errors.nuevoRazon &&
+                  <Text style={styles.error}>
+                    {errors.nuevoRazon.message}
+                  </Text>
+                }
+
+                {!watchCargaCiega &&
+                  <View>
+                    <Camera
+                      imageUri={imageUri}
+                      setImageUri={setImageUri}
+                      setFileName={setFileName}
+                    />
+                  </View>
+                }
+                {!watchCargaCiega && cameraError &&
+                  <Text style={styles.error}>
+                    Fotografía es obligatoria
+                  </Text>
+                }
+              </View>
+            }
 
             <View style={styles.buttons}>
               <Pressable
@@ -495,5 +667,10 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: '#fb630f',
+  },
+  error: {
+    fontSize: 16,
+    marginBottom: 25,
+    color: 'red'
   }
 });
