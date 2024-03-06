@@ -9,7 +9,7 @@ const Radio = ({ data, value, onChange, onBlur, horizontalOptions }) => {
     <RadioButton.Group onValueChange={onChange} value={value} onBlur={onBlur}  >
       <View style={horizontalOptions && styles.cargaCiega}>
         {data.map(option => (
-          <View style={styles.labelValue}>
+          <View style={styles.labelValue} key={option.id}>
             <RadioButton value={option.value} color='#474545' />
             <Text style={styles.radioLabel}>{option.label}</Text>
           </View>
