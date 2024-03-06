@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { DataTable } from "react-native-paper";
 
 export default function Tabla({
@@ -17,30 +17,24 @@ export default function Tabla({
   uriFoto,
 }) {
     return (
-        <View styles={styles.tableContainer}>
-            <DataTable>
-                <DataTable.Header>
-                    <DataTable.Title> Donativo </DataTable.Title>
-                    <DataTable.Title> Donante </DataTable.Title>
-                    <DataTable.Title> Tipo Carga </DataTable.Title>
-                    <DataTable.Title> Conductor </DataTable.Title>
-                    {/*<DataTable.Title> Evidencia </DataTable.Title>*/}
-                </DataTable.Header>
-            </DataTable>
-            <DataTable>
+        <View styles={styles.tableContainer}>             
                 <DataTable.Row>
+                    <DataTable.Cell> {id} </DataTable.Cell>
+                  {/*  <DataTable.Cell> {fecha} </DataTable.Cell>*/}
                     <DataTable.Cell> {conductor} </DataTable.Cell>
-                    <DataTable.Cell> {donante} </DataTable.Cell>
                     <DataTable.Cell> {donativo} </DataTable.Cell>
-                    <DataTable.Cell> {} </DataTable.Cell>
-                </DataTable.Row>
-                
-            </DataTable>
-           {/* <Text>{conductor}</Text>
-            <Text>{donante}</Text>
-            <Text>{donativo}</Text>
-    <Text>{uriFoto}</Text>*/}
-        </View>
+                    <DataTable.Cell> {donante} </DataTable.Cell>
+                    <DataTable.Cell> {tipoCarga} </DataTable.Cell>
+                    <DataTable.Cell> {cantidadCarga} </DataTable.Cell>
+                    <DataTable.Cell> {cargaCiega} </DataTable.Cell>
+                    <DataTable.Cell> {hayDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell> {porcentajeDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell> {razonDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell> Foto </DataTable.Cell>   
+                </DataTable.Row>  
+                       
+       </View>
+      
     )
 }
 

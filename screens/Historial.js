@@ -9,7 +9,7 @@ import {
 
 import { SafeAreaView, View, Text, StyleSheet, Image, Button, Pressable, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { Searchbar } from 'react-native-paper';
+import { DataTable, Searchbar } from 'react-native-paper';
 
 import Tabla from "../components/Tabla";
 
@@ -87,11 +87,42 @@ React.useEffect(() => {
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
-        <ScrollView>
-        {donativo.map((donativo) => 
-          (<Tabla {...donativo}/>)
-        )}
-      </ScrollView>  
+
+        <View> 
+            <ScrollView>
+              <ScrollView horizontal>
+              <DataTable >
+                <DataTable.Header>
+                  <DataTable.Title>Id</DataTable.Title>
+                  <DataTable.Title>Fecha</DataTable.Title>
+                  <DataTable.Title>Conductor</DataTable.Title>
+                  <DataTable.Title>Donativo</DataTable.Title>
+                  <DataTable.Title>Donante</DataTable.Title>
+                  <DataTable.Title>Tipo Carga</DataTable.Title>
+                  <DataTable.Title>Cantidad</DataTable.Title>
+                  <DataTable.Title>Carga Ciega</DataTable.Title>
+                  <DataTable.Title>Desperdicio</DataTable.Title>
+                  <DataTable.Title>% Desperdicio</DataTable.Title>
+                  <DataTable.Title>Evidencia</DataTable.Title>
+                </DataTable.Header>
+                
+                {donativo.map((donativo) => 
+              (<Tabla {...donativo}/>)
+              )}
+              </DataTable>
+              </ScrollView>
+
+              
+              
+
+              
+        
+            
+          </ScrollView> 
+        </View>
+
+        
+        
       </View>
     </SafeAreaView>
   );
@@ -122,7 +153,9 @@ const styles = StyleSheet.create({
   },
   btnSpace: {
     flexDirection: 'row',
-    gap: 5
+    gap: 5,
+    paddingTop:15,
+    paddingBottom:10
   },
   searchSpace: {
     flexDirection: 'row',
