@@ -34,7 +34,7 @@ const Camera = ({ setImageUri, setFileName, imageUri }) => {
   return (
     <View >
       <View style={styles.camera}>
-          <Text style={styles.label}>Tomar fotografía</Text>
+          <Text style={styles.label}>Tomar Fotografía</Text>
           <Pressable onPress={takePhoto}  >
             <FontAwesome5 name="camera" size={60} color="#EBB641" />
           </Pressable>
@@ -45,7 +45,7 @@ const Camera = ({ setImageUri, setFileName, imageUri }) => {
           <Image source={{ uri: imageUri }} style={styles.photo} />
         </View>
         :
-        <Text style={styles.legend}>Aún no has tomado una fotografía.</Text>
+        <Text style={styles.legend}>Aún no has tomado una fotografía</Text>
       }
 
     </View>
@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   legend: {
-    fontSize: 16
+    fontSize: 16,
+    marginBottom: 10
   },
   photo: {
     width: 350,
