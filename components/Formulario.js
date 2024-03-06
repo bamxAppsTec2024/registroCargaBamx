@@ -17,9 +17,9 @@ import { Controller, useForm } from 'react-hook-form';
 
 import DropdownComponent from './Dropdown';
 import Radio from './Radio';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Camera from './Camera';
 import AddOtroField from './AddOtroField';
+import { DatePickerInput } from 'react-native-paper-dates';
 
 import * as ImagePicker from "expo-image-picker";
 
@@ -43,6 +43,8 @@ export default function App() {
   const [donativos, setDonativos] = useState([]);
   const [showOtroConductor, setShowOtroConductor] = useState(false);
   const [showOtroDonante, setShowOtroDonante] = useState(false);
+  const [showOtroDonativo, setShowOtroDonativo] = useState(false);
+  const [showOtroRazon, setShowOtroRazon] = useState(false);
 
   const defaultValuesForm = {
     fecha: new Date(),
@@ -123,19 +125,32 @@ export default function App() {
   // porcentaje de desperdicio.
   const porcentajes = crearArregloPorcentajes();
 
-  
+
 
   const watchConductor = watch('conductor');
   useEffect(() => {
     const { value } = watchConductor;
     setShowOtroConductor(value === 'Otro');
   }, [watchConductor]);
+
   const watchDonante = watch('donante');
-  
   useEffect(() => {
     const { value } = watchDonante;
     setShowOtroDonante(value === 'Otro');
   }, [watchDonante]);
+
+  const watchDonativo = watch('donativo');
+  useEffect(() => {
+    const { value } = watchDonativo;
+    setShowOtroDonativo(value === 'Otro');
+  }, [watchDonativo]);
+
+  const watchRazon = watch('razonDesperdicio');
+  useEffect(() => {
+    const { value } = watchRazon;
+    setShowOtroRazon(value === 'Otro');
+  }, [watchRazon]);
+
 
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data) => {
@@ -155,10 +170,22 @@ export default function App() {
       createRecordCatalogo('donante', data.nuevoDonante);
       data.donante = data.nuevoDonante;
     }
+    if (data.nuevoRazon) {
+      createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
+      data.razonDesperdicio = data.nuevoRazon;
+    }
+
+    if (data.nuevoDonativo) {
+      createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
+      data.donativo = data.nuevoDonativo;
+    }
 
     // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
     delete data.hora;
     delete data.nuevoConductor;
+    delete data.nuevoDonante;
+    delete data.nuevoRazon;
+    delete data.nuevoDonativo;
   };
 
   const onSubmit = async (data) => {
@@ -174,9 +201,8 @@ export default function App() {
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
-
-
   };
+
   const allowOnlyNumber = (value) => {
     return value.replace(/[^0-9]/g, '');
   };
@@ -202,45 +228,6 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
-            <View style={styles.dateTime}>
-              <View >
-                <Text style={styles.label}>Fecha</Text>
-                <View style={styles.dateView}>
-                  <Controller
-                    control={control}
-                    name={'fecha'}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={new Date()}
-                        mode={'date'}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                      />
-                    )}
-                  />
-                </View>
-              </View>
-
-              <View>
-                <Text style={styles.label}>Hora</Text>
-                <View style={styles.dateView}>
-                  <Controller
-                    control={control}
-                    name={'hora'}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={new Date()}
-                        mode={'time'}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                      />
-                    )}
-                  />
-                </View>
-              </View>
-            </View>
             <View>
               <Text style={styles.label}>Conductor</Text>
               <Controller
@@ -340,6 +327,13 @@ export default function App() {
                   />
                 )}
               />
+
+              <AddOtroField
+                showOtroField={showOtroDonativo}
+                placeholder='Agregar Donativo'
+                field='Donativo'
+                control={control}
+              />
             </View>
             <View>
               <Text style={styles.label}>Cantidad Carga (toneladas)</Text>
@@ -412,6 +406,13 @@ export default function App() {
               />
             </View>
 
+            <AddOtroField
+              showOtroField={showOtroRazon}
+              placeholder='Agregar Razón'
+              field='Razon'
+              control={control}
+            />
+
             <Camera
               imageUri={imageUri}
               setImageUri={setImageUri}
@@ -460,6 +461,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     marginBottom: 10
+  },
+  datePicker: {
+    width: 200,
+    borderColor: 'black',
+    backgroundColor: '#FAFAFA'
   },
   textInput: {
     margin: 0,
