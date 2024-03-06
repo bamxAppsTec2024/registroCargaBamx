@@ -19,7 +19,7 @@ export default function Tabla({
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
-                    <DataTable.Cell> {id} </DataTable.Cell>
+                    {/* <DataTable.Cell> {id} </DataTable.Cell> */}
                   {/*  <DataTable.Cell> {fecha} </DataTable.Cell>*/}
                     <DataTable.Cell> {conductor} </DataTable.Cell>
                     <DataTable.Cell> {donativo} </DataTable.Cell>
