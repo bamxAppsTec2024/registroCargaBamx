@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
   getDownloadURL
 } from "firebase/storage";
-import { getDocs, addDoc, collection, initializeFirestore } from "firebase/firestore";
+import { getDocs, addDoc, collection, initializeFirestore, doc, updateDoc, where, query } from "firebase/firestore";
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID } from '@env';
 // Initialize Firebase
 const firebaseConfig = {
@@ -16,8 +16,6 @@ const firebaseConfig = {
   messagingSenderId: MESSAGING_SENDER_ID,
   appId: APP_ID
 };
-
-console.log(firebaseConfig);
 
 if (getApps().length === 0) {
   initializeApp(firebaseConfig);
@@ -101,14 +99,44 @@ const createRecordCatalogo = async (nombreCatalogo, valor) => {
 
 const uploadUrl = (filename) => {
   getDownloadURL(ref(fbStorage, `images/${filename}`))
-  .then((url) => {
-    console.log('url', url);
-    return url
-  })
-  .catch((error) => {
-    // Handle any errors
-    console.log(error);
-  });
-}
+    .then((url) => {
+      return url;
+    })
+    .catch((error) => {
+      // Handle any errors
+      console.log(error);
+    });
+};
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, uploadUrl };
+const getRecordDonante = async (nombreDonante, cantidadCarga, porcentajeDesperdicio) => {
+
+  const q = query(collection(db, "donante"), where("nombre", "==", nombreDonante));
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (record) => { // Solo habrá una coincidencia
+    const docRef = doc(db, "donante", record.id);
+    const myJSON = JSON.stringify(record.data());
+    const obj = JSON.parse(myJSON);
+
+    const cantidadCargaCalculada = cantidadCarga * (100 - porcentajeDesperdicio) / 100;
+    const cantidadDesperdicioCalculado = cantidadCarga * porcentajeDesperdicio / 100;
+
+    
+    if (obj.cantidadCargaUtil && obj.cantidadDesperdicio)  {
+      await updateDoc(docRef, {
+        cantidadCargaUtil: obj.cantidadCargaUtil + cantidadCargaCalculada,
+        cantidadDesperdicio: obj.cantidadDesperdicio + cantidadDesperdicioCalculado
+      });
+    } else {
+      await updateDoc(docRef, {
+        cantidadCargaUtil: cantidadCargaCalculada,
+        cantidadDesperdicio: cantidadDesperdicioCalculado
+      });
+    }
+  });
+  
+};
+
+
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, uploadUrl, getRecordDonante };

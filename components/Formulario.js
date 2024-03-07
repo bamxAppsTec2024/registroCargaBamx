@@ -19,7 +19,7 @@ import Radio from './Radio';
 import Camera from './Camera';
 import RequestCameraPermission from './RequestCameraPermission';
 
-import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo } from '../firebaseConfig';
+import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, getRecordDonante } from '../firebaseConfig';
 
 import {
   dataCargaCiega,
@@ -153,8 +153,13 @@ export default function App() {
 
   const watchCargaCiega = watch('cargaCiega');
 
+  const calcularCantidadCarga = (nombreDonante, cantidadCarga, porcentajeDesperdicio) => {
+    // Encotrar record
+    getRecordDonante(nombreDonante, cantidadCarga, porcentajeDesperdicio);
+  };
+
   // Función para structurar datos como se enviarán a la base de datos
-  const estructurarData = (data,  downloadUrl) => {
+  const estructurarData = (data, downloadUrl) => {
     data.conductor = data.conductor.value;
     data.donante = data.donante.value;
     data.donativo = data.donativo.value;
@@ -181,7 +186,7 @@ export default function App() {
       createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
       data.donativo = data.nuevoDonativo;
     }
-
+    calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
     // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
     delete data.hora;
     delete data.nuevoConductor;
@@ -207,7 +212,7 @@ export default function App() {
     // Si la carga es ciega, borrar valores predeterminados 
     // de los radios y hacer que donativo no sea undefined
     // porque se genera a partir del tipo de carga
-    if(watchCargaCiega) {
+    if (watchCargaCiega) {
       data.donativo = '';
       data.tipoCarga = '';
       data.hayDesperdicio = '';
@@ -221,15 +226,14 @@ export default function App() {
       if (!watchCargaCiega) {
         const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
           console.log(v)
-        ).then((uploadResp) =>{
-          console.log(uploadResp);
+        ).then((uploadResp) => {
           const myJSON = JSON.stringify(uploadResp);
           const obj = JSON.parse(myJSON);
-  
+
           estructurarData(data, obj.downloadUrl);
           clearForm(); // Limpiar los campos del formulario
-        })
-       
+        });
+
       }
       saveRecord(data); // Guardar record en la base de datos
     } catch (e) {
