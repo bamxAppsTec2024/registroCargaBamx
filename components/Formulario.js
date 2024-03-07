@@ -18,14 +18,17 @@ import DropdownComponent from './Dropdown';
 import Radio from './Radio';
 import Camera from './Camera';
 import RequestCameraPermission from './RequestCameraPermission';
+import { EvilIcons } from '@expo/vector-icons';
 
-import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo } from '../firebaseConfig';
+import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, getRecordDonante } from '../firebaseConfig';
 
 import {
   dataCargaCiega,
   dataHayDesperdicio,
   dataTipoCarga,
-  crearArregloPorcentajes
+  crearArregloPorcentajes,
+  unidadesCamiones,
+  duracionDeCarga
 } from '../utilities/utilities';
 
 
@@ -41,11 +44,14 @@ export default function App() {
   const [showOtroDonativo, setShowOtroDonativo] = useState(false);
   const [showOtroRazon, setShowOtroRazon] = useState(false);
   const [cameraError, setCameraError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const defaultValuesForm = {
     fecha: new Date(),
+    unidadCamion: '',
     conductor: '',
     nuevoConductor: '',
+    tiempoCarga: '',
     donante: '',
     nuevoDonante: '',
     cargaCiega: false,
@@ -153,14 +159,23 @@ export default function App() {
 
   const watchCargaCiega = watch('cargaCiega');
 
+  const calcularCantidadCarga = (nombreDonante, cantidadCarga, porcentajeDesperdicio) => {
+    // Encotrar record
+    getRecordDonante(nombreDonante, cantidadCarga, porcentajeDesperdicio);
+  };
+
+
   // Función para structurar datos como se enviarán a la base de datos
-  const estructurarData = (data) => {
+  const estructurarData = (data, downloadUrl) => {
+    data.unidadCamion = data.unidadCamion.value;
     data.conductor = data.conductor.value;
+    data.tiempoCarga = data.tiempoCarga.value;
     data.donante = data.donante.value;
     data.donativo = data.donativo.value;
     data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
     data.razonDesperdicio = data.razonDesperdicio.value;
     data.uriFoto = imageUri;
+    data.cloudUrl = downloadUrl;
 
     if (data.nuevoConductor) {
       createRecordCatalogo('conductor', data.nuevoConductor);
@@ -180,7 +195,7 @@ export default function App() {
       createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
       data.donativo = data.nuevoDonativo;
     }
-
+    calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
     // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
     delete data.hora;
     delete data.nuevoConductor;
@@ -203,12 +218,10 @@ export default function App() {
       return;
     }
 
-    estructurarData(data);
-
     // Si la carga es ciega, borrar valores predeterminados 
     // de los radios y hacer que donativo no sea undefined
     // porque se genera a partir del tipo de carga
-    if(watchCargaCiega) {
+    if (watchCargaCiega) {
       data.donativo = '';
       data.tipoCarga = '';
       data.hayDesperdicio = '';
@@ -218,22 +231,25 @@ export default function App() {
 
     console.log(data);
     try {
+      setLoading(true);
       // Si la carga no es ciega, subir foto
       if (!watchCargaCiega) {
         const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
           console.log(v)
-        );
-        console.log(uploadResp);
+        ).then((uploadResp) => {
+          const myJSON = JSON.stringify(uploadResp);
+          const obj = JSON.parse(myJSON);
+
+          estructurarData(data, obj.downloadUrl);
+          clearForm(); // Limpiar los campos del formulario
+        });
+
       }
       saveRecord(data); // Guardar record en la base de datos
-      clearForm(); // Limpiar los campos del formulario
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
-  };
-
-  const allowOnlyNumber = (value) => {
-    return value.replace(/[^0-9]/g, '');
+    setLoading(false);
   };
 
   // Componente que solicita permiso a la cámara
@@ -249,6 +265,32 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
+            
+            <View>
+              <Text style={styles.label}>Unidad Camión</Text>
+              <Controller
+                control={control}
+                name={'unidadCamion'}
+                rules={{
+                  required: { value: true, message: "Unidad camión es obligatoria" },
+                }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={unidadesCamiones}
+                    placeholder='Unidad Camión'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+            {errors.unidadCamion &&
+              <Text style={styles.error}>
+                {errors.unidadCamion.message}
+              </Text>
+            }
             <View>
               <Text style={styles.label}>Conductor</Text>
               <Controller
@@ -303,7 +345,31 @@ export default function App() {
                 {errors.nuevoConductor.message}
               </Text>
             }
-
+            <View>
+              <Text style={styles.label}>Tiempo Empleado en Cargar Camión</Text>
+              <Controller
+                control={control}
+                name={'tiempoCarga'}
+                rules={{
+                  required: { value: true, message: "Tiempo de carga es obligatorio" },
+                }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={duracionDeCarga}
+                    placeholder='Tiempo de Carga'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+            {errors.tiempoCarga &&
+              <Text style={styles.error}>
+                {errors.tiempoCarga.message}
+              </Text>
+            }
 
             <View>
               <Text style={styles.label}>Donante</Text>
@@ -457,7 +523,12 @@ export default function App() {
                     control={control}
                     name={'cantidadCarga'}
                     rules={{
-                      required: { value: true, message: "Cantidad carga es obligatoria" },
+                      validate: {
+                        required: (value) => {
+                          if (!value) return 'Cantidad de carga es obligatoria';
+                          if (isNaN(value)) return 'Ingrese una cantidad válida';
+                        }
+                      }
                     }}
                     render={({ field: { value, onChange, onBlur } }) => (
                       <TextInput
@@ -590,6 +661,13 @@ export default function App() {
                 }
               </View>
             }
+            
+            {loading &&
+              <View>
+                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner}/>
+                <Text style={styles.submitmessage}>Enviando datos</Text>
+              </View>
+            }
 
             <View style={styles.buttons}>
               <Pressable
@@ -672,5 +750,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 25,
     color: 'red'
+  },
+  spinner: {
+    marginTop: 25,
+    alignSelf: 'center'
+  },
+  submitmessage: {
+    margin: 10,
+    alignSelf: 'center',
+    fontSize: 16,
+    fontWeight: 'Bold'
   }
 });
