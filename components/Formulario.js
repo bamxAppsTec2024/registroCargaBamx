@@ -18,6 +18,7 @@ import DropdownComponent from './Dropdown';
 import Radio from './Radio';
 import Camera from './Camera';
 import RequestCameraPermission from './RequestCameraPermission';
+import { EvilIcons } from '@expo/vector-icons';
 
 import { uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, getRecordDonante } from '../firebaseConfig';
 
@@ -43,6 +44,7 @@ export default function App() {
   const [showOtroDonativo, setShowOtroDonativo] = useState(false);
   const [showOtroRazon, setShowOtroRazon] = useState(false);
   const [cameraError, setCameraError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const defaultValuesForm = {
     fecha: new Date(),
@@ -229,6 +231,7 @@ export default function App() {
 
     console.log(data);
     try {
+      setLoading(true);
       // Si la carga no es ciega, subir foto
       if (!watchCargaCiega) {
         const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
@@ -246,6 +249,7 @@ export default function App() {
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
+    setLoading(false);
   };
 
   // Componente que solicita permiso a la cámara
@@ -261,6 +265,7 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
+            
             <View>
               <Text style={styles.label}>Unidad Camión</Text>
               <Controller
@@ -656,6 +661,13 @@ export default function App() {
                 }
               </View>
             }
+            
+            {loading &&
+              <View>
+                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner}/>
+                <Text style={styles.submitmessage}>Enviando datos</Text>
+              </View>
+            }
 
             <View style={styles.buttons}>
               <Pressable
@@ -738,5 +750,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 25,
     color: 'red'
+  },
+  spinner: {
+    marginTop: 25,
+    alignSelf: 'center'
+  },
+  submitmessage: {
+    margin: 10,
+    alignSelf: 'center',
+    fontSize: 16,
+    fontWeight: 'Bold'
   }
 });
