@@ -99,4 +99,16 @@ const createRecordCatalogo = async (nombreCatalogo, valor) => {
 
 };
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo };
+const uploadUrl = (filename) => {
+  getDownloadURL(ref(fbStorage, `images/${filename}`))
+  .then((url) => {
+    console.log('url', url);
+    return url
+  })
+  .catch((error) => {
+    // Handle any errors
+    console.log(error);
+  });
+}
+
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, uploadUrl };
