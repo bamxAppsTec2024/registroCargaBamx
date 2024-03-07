@@ -154,13 +154,14 @@ export default function App() {
   const watchCargaCiega = watch('cargaCiega');
 
   // Función para structurar datos como se enviarán a la base de datos
-  const estructurarData = (data) => {
+  const estructurarData = (data,  downloadUrl) => {
     data.conductor = data.conductor.value;
     data.donante = data.donante.value;
     data.donativo = data.donativo.value;
     data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
     data.razonDesperdicio = data.razonDesperdicio.value;
     data.uriFoto = imageUri;
+    data.cloudUrl = downloadUrl;
 
     if (data.nuevoConductor) {
       createRecordCatalogo('conductor', data.nuevoConductor);
@@ -203,8 +204,6 @@ export default function App() {
       return;
     }
 
-    estructurarData(data);
-
     // Si la carga es ciega, borrar valores predeterminados 
     // de los radios y hacer que donativo no sea undefined
     // porque se genera a partir del tipo de carga
@@ -222,11 +221,17 @@ export default function App() {
       if (!watchCargaCiega) {
         const uploadResp = await uploadToFirebase(imageUri, fileName, (v) =>
           console.log(v)
-        );
-        console.log(uploadResp);
+        ).then((uploadResp) =>{
+          console.log(uploadResp);
+          const myJSON = JSON.stringify(uploadResp);
+          const obj = JSON.parse(myJSON);
+  
+          estructurarData(data, obj.downloadUrl);
+          clearForm(); // Limpiar los campos del formulario
+        })
+       
       }
       saveRecord(data); // Guardar record en la base de datos
-      clearForm(); // Limpiar los campos del formulario
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
