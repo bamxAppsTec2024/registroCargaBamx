@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getData } from "../firebaseConfig";
 import {
   collection,
@@ -7,17 +7,42 @@ import {
   where,
 } from "firebase/firestore";
 
-import { SafeAreaView, View, Text, StyleSheet, Image, Button, Pressable, ScrollView } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { DataTable, Searchbar } from 'react-native-paper';
+import { useNavigation } from "@react-navigation/native";
 
 import Tabla from "../components/Tabla";
 
 const Historial = () => {
 
-const [donativo, setDonativo] = React.useState([]);
+  const searchBarFilter = async () => {
+    const collectionRef = collection(getData, "donativo");
+    const q = query (collectionRef, where(getFilterVal, "in", "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"))
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          uriFoto: doc.data().uriFoto,
+        })
+        )
+      )});
+  };
+
+  const [donativo, setDonativo] = React.useState([]);
 
 React.useEffect(() => {
+  
   const collectionRef = collection(getData, "donativo");
   const q = query(collectionRef, where("cantidadCarga", ">", "0"));
 
@@ -41,22 +66,11 @@ React.useEffect(() => {
     )});
 
   return unsuscribe;
-}, []);
+} , [getFilterVal]);
   
-
-
 
   return (
     <SafeAreaView>
-
-      {/* 
-      <ScrollView>
-        {donativo.map((donativo) => 
-          (<Tabla {...donativo}/>)
-        )}
-      </ScrollView>
-      */}
-
       
       <View style ={styles.container}>
         <Image source={require('../assets/logoBamx.png')} style={styles.logo} />
@@ -65,7 +79,9 @@ React.useEffect(() => {
         </View>
         <View>
           <Searchbar
-          placeholder="Buscar..."/>
+          placeholder="Buscar..."
+          onChangeText={searchBarFilter}
+          value={getFilterVal}/>
 
         </View>
         <View style = {styles.btnSpace}>
@@ -106,18 +122,11 @@ React.useEffect(() => {
                   <DataTable.Title>Evidencia</DataTable.Title>
                 </DataTable.Header>
                 
-                {donativo.map((donativo) => 
+              {donativo.map((donativo) => 
               (<Tabla {...donativo}/>)
               )}
               </DataTable>
-              </ScrollView>
-
-              
-              
-
-              
-        
-            
+              </ScrollView>   
           </ScrollView> 
         </View>
 
