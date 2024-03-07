@@ -19,26 +19,27 @@ export default function Tabla({
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
-                    <DataTable.Cell> {id} </DataTable.Cell>
-                  {/*  <DataTable.Cell> {fecha} </DataTable.Cell>*/}
-                    <DataTable.Cell> {conductor} </DataTable.Cell>
-                    <DataTable.Cell> {donativo} </DataTable.Cell>
-                    <DataTable.Cell> {donante} </DataTable.Cell>
-                    <DataTable.Cell> {tipoCarga} </DataTable.Cell>
-                    <DataTable.Cell> {cantidadCarga} </DataTable.Cell>
-                    <DataTable.Cell> {cargaCiega} </DataTable.Cell>
-                    <DataTable.Cell> {hayDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell> {porcentajeDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell> {razonDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell> 
+                    <DataTable.Cell style ={styles.cellContainer2}> <Text>1</Text> </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> 
+                      <Text>24/02/2024</Text>
+                    </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {conductor}</DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> 
+                      <Text textBreakStrategy="balanced">{donativo}</Text> </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {donante} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {tipoCarga} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {cantidadCarga} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {cargaCiega} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {hayDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {porcentajeDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {razonDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> 
                         <Pressable style={styles.button2}>
                             <Text style={styles.buttonLegend}>Ver foto</Text>
                         </Pressable>
                     </DataTable.Cell>   
-                </DataTable.Row>  
-                       
+                </DataTable.Row>      
        </View>
-      
     )
 }
 
@@ -48,6 +49,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         margin: 16,
         borderRadius: 8
+    },
+    cellContainer: {
+      padding:10,
+      width: 100,
+      height:50,
+      textAlign:'center',
+      flex:1,
+      flexWrap:'wrap'
+    },
+    cellContainer2: {
+      padding:10,
+      width: 50,
+      textAlign:'center'
     },
     button2: {
         padding: 10,

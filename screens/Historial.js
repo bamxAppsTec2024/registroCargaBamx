@@ -10,7 +10,6 @@ import {
 import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { DataTable, Searchbar } from 'react-native-paper';
-import { useNavigation } from "@react-navigation/native";
 
 import Tabla from "../components/Tabla";
 
@@ -42,7 +41,7 @@ const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
 
 React.useEffect(() => {
-  
+
   const collectionRef = collection(getData, "donativo");
   const q = query(collectionRef, where("cantidadCarga", ">", "0"));
 
@@ -66,7 +65,7 @@ React.useEffect(() => {
     )});
 
   return unsuscribe;
-} , [getFilterVal]);
+} , []);
   
 
   return (
@@ -80,8 +79,8 @@ React.useEffect(() => {
         <View>
           <Searchbar
           placeholder="Buscar..."
-          onChangeText={searchBarFilter}
-          value={getFilterVal}/>
+          onChangeText={''}
+          value={''}/>
 
         </View>
         <View style = {styles.btnSpace}>
@@ -109,17 +108,17 @@ React.useEffect(() => {
               <ScrollView horizontal>
               <DataTable >
                 <DataTable.Header>
-                  <DataTable.Title>Id</DataTable.Title>
-                  <DataTable.Title>Fecha</DataTable.Title>
-                  <DataTable.Title>Conductor</DataTable.Title>
-                  <DataTable.Title>Donativo</DataTable.Title>
-                  <DataTable.Title>Donante</DataTable.Title>
-                  <DataTable.Title>Tipo Carga</DataTable.Title>
-                  <DataTable.Title>Cantidad</DataTable.Title>
-                  <DataTable.Title>Carga Ciega</DataTable.Title>
-                  <DataTable.Title>Desperdicio</DataTable.Title>
-                  <DataTable.Title>% Desperdicio</DataTable.Title>
-                  <DataTable.Title>Evidencia</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle2}>Id</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Fecha</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Conductor</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Donativo</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Donante</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
                 </DataTable.Header>
                 
               {donativo.map((donativo) => 
@@ -210,6 +209,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     textAlign: 'center'
+  },
+  tableTitle :{
+    textAlign: "center",
+    fontWeight:'bold',
+    padding:10,
+    width: 110
+  },
+  tableTitle2 :{
+    textAlign: "center",
+    fontWeight:'bold',
+    padding:10,
+    width: 50
   }
 });
 
