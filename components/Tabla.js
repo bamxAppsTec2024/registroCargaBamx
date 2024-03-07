@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Text, Pressable} from "react-native";
 import { DataTable } from "react-native-paper";
 
 export default function Tabla({
@@ -30,7 +30,11 @@ export default function Tabla({
                     <DataTable.Cell> {hayDesperdicio} </DataTable.Cell>
                     <DataTable.Cell> {porcentajeDesperdicio} </DataTable.Cell>
                     <DataTable.Cell> {razonDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell> Foto </DataTable.Cell>   
+                    <DataTable.Cell> 
+                        <Pressable style={styles.button2}>
+                            <Text style={styles.buttonLegend}>Ver foto</Text>
+                        </Pressable>
+                    </DataTable.Cell>   
                 </DataTable.Row>  
                        
        </View>
@@ -45,4 +49,18 @@ const styles = StyleSheet.create({
         margin: 16,
         borderRadius: 8
     },
+    button2: {
+        padding: 10,
+        backgroundColor: '#fb630f',
+        borderRadius: 10,
+        width: 60,
+        alignContent: 'middle',
+        justifyContent: 'center'
+      },
+      buttonLegend: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
 });

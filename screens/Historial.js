@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getData } from "../firebaseConfig";
 import {
   collection,
@@ -14,25 +14,21 @@ import {
   Text,
   StyleSheet,
   Image,
-  Button,
   Pressable,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
 import Tabla from "../components/Tabla";
 
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
-  const [donantes, setDonantes] = React.useState([]);
-  const [donanteTotal, setDonanteTotal] = React.useState([]);
 
   React.useEffect(() => {
     const collectionRef = collection(getData, "donativo");
-    const q = query(collectionRef, where("cantidadCarga", ">", "0"));
-
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
@@ -54,6 +50,36 @@ const Historial = () => {
 
     return unsuscribe;
   }, []);
+
+  const searchBarFilter = async () => {
+    const collectionRef = collection(getData, "donativo");
+    const q = query(
+      collectionRef,
+      where(
+        getFilterVal,
+        "in",
+        "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"
+      )
+    );
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          uriFoto: doc.data().uriFoto,
+        }))
+      );
+    });
+  };
 
   const getMejores = async () => {
     const collectionRef = collection(getData, "donante");
@@ -125,7 +151,11 @@ const Historial = () => {
           <Text style={styles.title}>Ver Historial</Text>
         </View>
         <View>
-          <Searchbar placeholder="Buscar..." />
+          <Searchbar
+            placeholder="Buscar..."
+            onChangeText={searchBarFilter}
+            value={getFilterVal}
+          />
         </View>
         <View style={styles.btnSpace}>
           <TouchableOpacity style={styles.buttonIcon}>
