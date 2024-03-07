@@ -51,7 +51,7 @@ const Historial = () => {
     return unsuscribe;
   }, []);
 
-  const searchBarFilter = async () => {
+  /* const searchBarFilter = async () => {
     const collectionRef = collection(getData, "donativo");
     const q = query(
       collectionRef,
@@ -79,7 +79,7 @@ const Historial = () => {
         }))
       );
     });
-  };
+  }; */
 
   const getMejores = async () => {
     const collectionRef = collection(getData, "donante");
