@@ -25,7 +25,9 @@ import {
   dataCargaCiega,
   dataHayDesperdicio,
   dataTipoCarga,
-  crearArregloPorcentajes
+  crearArregloPorcentajes,
+  unidadesCamiones,
+  duracionDeCarga
 } from '../utilities/utilities';
 
 
@@ -44,8 +46,10 @@ export default function App() {
 
   const defaultValuesForm = {
     fecha: new Date(),
+    unidadCamion: '',
     conductor: '',
     nuevoConductor: '',
+    tiempoCarga: '',
     donante: '',
     nuevoDonante: '',
     cargaCiega: false,
@@ -158,9 +162,12 @@ export default function App() {
     getRecordDonante(nombreDonante, cantidadCarga, porcentajeDesperdicio);
   };
 
+
   // Función para structurar datos como se enviarán a la base de datos
   const estructurarData = (data, downloadUrl) => {
+    data.unidadCamion = data.unidadCamion.value;
     data.conductor = data.conductor.value;
+    data.tiempoCarga = data.tiempoCarga.value;
     data.donante = data.donante.value;
     data.donativo = data.donativo.value;
     data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
@@ -241,10 +248,6 @@ export default function App() {
     }
   };
 
-  const allowOnlyNumber = (value) => {
-    return value.replace(/[^0-9]/g, '');
-  };
-
   // Componente que solicita permiso a la cámara
   <RequestCameraPermission />;
 
@@ -258,6 +261,31 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
+            <View>
+              <Text style={styles.label}>Unidad Camión</Text>
+              <Controller
+                control={control}
+                name={'unidadCamion'}
+                rules={{
+                  required: { value: true, message: "Unidad camión es obligatoria" },
+                }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={unidadesCamiones}
+                    placeholder='Unidad Camión'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+            {errors.unidadCamion &&
+              <Text style={styles.error}>
+                {errors.unidadCamion.message}
+              </Text>
+            }
             <View>
               <Text style={styles.label}>Conductor</Text>
               <Controller
@@ -312,7 +340,31 @@ export default function App() {
                 {errors.nuevoConductor.message}
               </Text>
             }
-
+            <View>
+              <Text style={styles.label}>Tiempo Empleado en Cargar Camión</Text>
+              <Controller
+                control={control}
+                name={'tiempoCarga'}
+                rules={{
+                  required: { value: true, message: "Tiempo de carga es obligatorio" },
+                }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <DropdownComponent
+                    data={duracionDeCarga}
+                    placeholder='Tiempo de Carga'
+                    secureTextEntry
+                    val={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </View>
+            {errors.tiempoCarga &&
+              <Text style={styles.error}>
+                {errors.tiempoCarga.message}
+              </Text>
+            }
 
             <View>
               <Text style={styles.label}>Donante</Text>
@@ -466,7 +518,12 @@ export default function App() {
                     control={control}
                     name={'cantidadCarga'}
                     rules={{
-                      required: { value: true, message: "Cantidad carga es obligatoria" },
+                      validate: {
+                        required: (value) => {
+                          if (!value) return 'Cantidad de carga es obligatoria';
+                          if (isNaN(value)) return 'Ingrese una cantidad válida';
+                        }
+                      }
                     }}
                     render={({ field: { value, onChange, onBlur } }) => (
                       <TextInput
