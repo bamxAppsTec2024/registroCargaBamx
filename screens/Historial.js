@@ -22,14 +22,12 @@ import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
 
 import Tabla from "../components/Tabla";
-import ModalFotos from "../components/ModalFotos";
 
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
   const [FilterVal, setFilterVal] = React.useState("");
-
   React.useEffect(() => {
-    const collectionRef = collection(getData, "donativo");
+    const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -67,7 +65,7 @@ const Historial = () => {
   }
 
   const getMejores = async () => {
-    const collectionRef = collection(getData, "donante");
+    const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
@@ -82,7 +80,7 @@ const Historial = () => {
   };
 
   const getPeores = async () => {
-    const collectionRef = collection(getData, "donante");
+    const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadDesperdicio", "desc"));
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
@@ -96,11 +94,10 @@ const Historial = () => {
     });
   };
 
-  const getCargaCiega = async () => {
-    const collectionRef = collection(getData, "donativo");
+  /*const getCargaCiega = async () => {
+    const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", false));
-
-    
+   
 
   const unsuscribe = onSnapshot(q, (querySnapshot) => {
     setDonativo(
@@ -116,25 +113,15 @@ const Historial = () => {
         porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
         razonDesperdicio: doc.data().razonDesperdicio,
         tipoCarga: doc.data().tipoCarga,
-        uriFoto: doc.data().uriFoto,
         cloudUrl: doc.data().cloudUrl,
       })
       )
     )});
-
-  return unsuscribe;
-};
+};*/
   
 
   return (
     <SafeAreaView>
-      {/* 
-      <ScrollView>
-        {donativo.map((donativo) => 
-          (<Tabla {...donativo}/>)
-        )}
-      </ScrollView>
-      */}
 
       <View style={styles.container}>
         <Image source={require("../assets/logoBamx.png")} style={styles.logo} />
@@ -149,6 +136,7 @@ const Historial = () => {
             onIconPress={searchButton}
           />
         </View>
+
         <View style={styles.btnSpace}>
           <Pressable style={styles.buttonIcon}>
             <AntDesign
@@ -167,7 +155,7 @@ const Historial = () => {
             <Text style={styles.buttonLegend}>Peores</Text>
           </Pressable>
 
-          <Pressable onPress={getCargaCiega} style={styles.button2}>
+          <Pressable style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
@@ -189,16 +177,13 @@ const Historial = () => {
                   <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
                 </DataTable.Header>
-
-                {donativo.map((donativo) => (
-                  <Tabla {...donativo} />
-                ))}
+                  {donativo.map((donativo) => (
+                    <Tabla {...donativo}/>
+                  ))}
               </DataTable>
             </ScrollView>
           </ScrollView>
-        </View>
-
-      
+        </View>    
       </View>
     </SafeAreaView>
   );

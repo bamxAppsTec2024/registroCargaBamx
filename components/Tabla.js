@@ -20,7 +20,7 @@ export default function Tabla({
   cantidadCargaUtil,
   cantidadDesperdicio
 }) 
-
+  
 {  
   const [modalVisible, setModalVisible] = useState(false);
   //console.log(cloudUrl);
