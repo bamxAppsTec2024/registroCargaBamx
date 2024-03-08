@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { getData } from "../firebaseConfig";
+import React, { useState } from "react";
+import {db} from "../firebaseConfig";
 import {
   collection,
   onSnapshot,
@@ -20,9 +20,9 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
 
 import Tabla from "../components/Tabla";
+import ModalFotos from "../components/ModalFotos";
 
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
@@ -45,7 +45,7 @@ const Historial = () => {
           porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
           razonDesperdicio: doc.data().razonDesperdicio,
           tipoCarga: doc.data().tipoCarga,
-          uriFoto: doc.data().uriFoto,
+          cloudUrl: doc.data().cloudUrl,
         }))
       );
     });
@@ -100,25 +100,31 @@ const Historial = () => {
     const collectionRef = collection(getData, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", false));
 
-    const unsuscribe = onSnapshot(q, (querySnapshot) => {
-      setDonativo(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          cantidadCarga: doc.data().cantidadCarga,
-          cargaCiega: doc.data().cargaCiega,
-          conductor: doc.data().conductor,
-          donante: doc.data().donante,
-          donativo: doc.data().donativo,
-          fecha: doc.data().fecha,
-          hayDesperdicio: doc.data().hayDesperdicio,
-          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
-          razonDesperdicio: doc.data().razonDesperdicio,
-          tipoCarga: doc.data().tipoCarga,
-          uriFoto: doc.data().uriFoto,
-        }))
-      );
-    });
-  };
+    
+
+  const unsuscribe = onSnapshot(q, (querySnapshot) => {
+    setDonativo(
+      querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        cantidadCarga: doc.data().cantidadCarga,
+        cargaCiega: doc.data().cargaCiega,
+        conductor: doc.data().conductor,
+        donante: doc.data().donante,
+        donativo: doc.data().donativo,
+        fecha: doc.data().fecha,
+        hayDesperdicio: doc.data().hayDesperdicio,
+        porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+        razonDesperdicio: doc.data().razonDesperdicio,
+        tipoCarga: doc.data().tipoCarga,
+        uriFoto: doc.data().uriFoto,
+        cloudUrl: doc.data().cloudUrl,
+      })
+      )
+    )});
+
+  return unsuscribe;
+};
+  
 
   return (
     <SafeAreaView>
@@ -171,17 +177,17 @@ const Historial = () => {
             <ScrollView horizontal>
               <DataTable>
                 <DataTable.Header>
-                  <DataTable.Title>Id</DataTable.Title>
-                  <DataTable.Title>Fecha</DataTable.Title>
-                  <DataTable.Title>Conductor</DataTable.Title>
-                  <DataTable.Title>Donativo</DataTable.Title>
-                  <DataTable.Title>Donante</DataTable.Title>
-                  <DataTable.Title>Tipo Carga</DataTable.Title>
-                  <DataTable.Title>Cantidad</DataTable.Title>
-                  <DataTable.Title>Carga Ciega</DataTable.Title>
-                  <DataTable.Title>Desperdicio</DataTable.Title>
-                  <DataTable.Title>% Desperdicio</DataTable.Title>
-                  <DataTable.Title>Evidencia</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle2}>Id</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Fecha</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Conductor</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Donativo</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Donante</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                  <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
                 </DataTable.Header>
 
                 {donativo.map((donativo) => (
@@ -191,6 +197,8 @@ const Historial = () => {
             </ScrollView>
           </ScrollView>
         </View>
+
+      
       </View>
     </SafeAreaView>
   );
@@ -255,8 +263,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fb630f",
     borderRadius: 10,
-    width: 42,
-    alignItems: "center",
+    width: 50,
+    height:50,
+    alignItems: "center"
   },
   buttonLegend: {
     color: "white",
@@ -267,9 +276,21 @@ const styles = StyleSheet.create({
   buttonLegend2: {
     color: "white",
     fontSize: 13,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
+  tableTitle :{
+    textAlign: "center",
+    fontWeight:'bold',
+    padding:10,
+    width: 110
+  },
+  tableTitle2 :{
+    textAlign: "center",
+    fontWeight:'bold',
+    padding:10,
+    width: 50
+  }
 });
 
 export default Historial;
