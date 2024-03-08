@@ -15,11 +15,14 @@ export default function Tabla({
   razonDesperdicio,
   tipoCarga,
   uriFoto,
+  nombre,
+  cantidadCargaUtil,
+  cantidadDesperdicio
 }) {
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
-                    <DataTable.Cell> {id} </DataTable.Cell>
+                    {/* <DataTable.Cell> {id} </DataTable.Cell> */}
                   {/*  <DataTable.Cell> {fecha} </DataTable.Cell>*/}
                     <DataTable.Cell> {conductor} </DataTable.Cell>
                     <DataTable.Cell> {donativo} </DataTable.Cell>
@@ -30,6 +33,9 @@ export default function Tabla({
                     <DataTable.Cell> {hayDesperdicio} </DataTable.Cell>
                     <DataTable.Cell> {porcentajeDesperdicio} </DataTable.Cell>
                     <DataTable.Cell> {razonDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell>{nombre}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
                     <DataTable.Cell> 
                         <Pressable style={styles.button2}>
                             <Text style={styles.buttonLegend}>Ver foto</Text>

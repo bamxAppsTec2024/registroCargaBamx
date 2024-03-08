@@ -3,22 +3,34 @@ import { getData } from "../firebaseConfig";
 import {
   collection,
   onSnapshot,
+  orderBy,
   query,
   where,
 } from "firebase/firestore";
 
-import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { DataTable, Searchbar } from 'react-native-paper';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import { DataTable, Searchbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
 import Tabla from "../components/Tabla";
 
 const Historial = () => {
+  const [donativo, setDonativo] = React.useState([]);
+  const [FilterVal, setFilterVal] = React.useState("");
 
-  const searchBarFilter = async () => {
+  React.useEffect(() => {
     const collectionRef = collection(getData, "donativo");
-    const q = query (collectionRef, where(getFilterVal, "in", "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"))
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
@@ -34,80 +46,130 @@ const Historial = () => {
           razonDesperdicio: doc.data().razonDesperdicio,
           tipoCarga: doc.data().tipoCarga,
           uriFoto: doc.data().uriFoto,
-        })
-        )
-      )});
+        }))
+      );
+    });
+
+    return unsuscribe;
+  }, []);
+
+  /* function FindFilterVal(FilterVal) {
+    return donativo.find(FilterVal => donativo === FilterVal);
+  } */
+
+  function searchButton () {
+    try {
+      console.log(FilterVal);
+
+    } catch (e) {
+      Alert.alert("Error" + e.message);
+    }
+  }
+
+  const getMejores = async () => {
+    const collectionRef = collection(getData, "donante");
+    const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
+
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          nombre: doc.data().nombre,
+          cantidadCargaUtil: doc.data().cantidadCargaUtil,
+          cantidadDesperdicio: doc.data().cantidadDesperdicio,
+        }))
+      );
+    });
   };
 
-  const [donativo, setDonativo] = React.useState([]);
+  const getPeores = async () => {
+    const collectionRef = collection(getData, "donante");
+    const q = query(collectionRef, orderBy("cantidadDesperdicio", "desc"));
 
-React.useEffect(() => {
-  
-  const collectionRef = collection(getData, "donativo");
-  const q = query(collectionRef, where("cantidadCarga", ">", "0"));
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          nombre: doc.data().nombre,
+          cantidadCargaUtil: doc.data().cantidadCargaUtil,
+          cantidadDesperdicio: doc.data().cantidadDesperdicio,
+        }))
+      );
+    });
+  };
 
-  const unsuscribe = onSnapshot(q, (querySnapshot) => {
-    setDonativo(
-      querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        cantidadCarga: doc.data().cantidadCarga,
-        cargaCiega: doc.data().cargaCiega,
-        conductor: doc.data().conductor,
-        donante: doc.data().donante,
-        donativo: doc.data().donativo,
-        fecha: doc.data().fecha,
-        hayDesperdicio: doc.data().hayDesperdicio,
-        porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
-        razonDesperdicio: doc.data().razonDesperdicio,
-        tipoCarga: doc.data().tipoCarga,
-        uriFoto: doc.data().uriFoto,
-      })
-      )
-    )});
+  const getCargaCiega = async () => {
+    const collectionRef = collection(getData, "donativo");
+    const q = query(collectionRef, where("cargaCiega", "==", false));
 
-  return unsuscribe;
-} , [getFilterVal]);
-  
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          uriFoto: doc.data().uriFoto,
+        }))
+      );
+    });
+  };
 
   return (
     <SafeAreaView>
-      
-      <View style ={styles.container}>
-        <Image source={require('../assets/logoBamx.png')} style={styles.logo} />
+      {/* 
+      <ScrollView>
+        {donativo.map((donativo) => 
+          (<Tabla {...donativo}/>)
+        )}
+      </ScrollView>
+      */}
+
+      <View style={styles.container}>
+        <Image source={require("../assets/logoBamx.png")} style={styles.logo} />
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Ver Historial</Text>
         </View>
         <View>
           <Searchbar
-          placeholder="Buscar..."
-          onChangeText={searchBarFilter}
-          value={getFilterVal}/>
-
+            placeholder="Buscar..."
+            onChangeText={setFilterVal}
+            value={FilterVal}
+            onIconPress={searchButton}
+          />
         </View>
-        <View style = {styles.btnSpace}>
+        <View style={styles.btnSpace}>
           <Pressable style={styles.buttonIcon}>
             <AntDesign
-            name="calendar" 
-            size={24} color="white"
-            backgroundColor='#fb630f'/></Pressable>
-          
-          <Pressable style={styles.button}>
+              name="calendar"
+              size={24}
+              color="white"
+              backgroundColor="#fb630f"
+            />
+          </Pressable>
+
+          <Pressable onPress={getMejores} style={styles.button}>
             <Text style={styles.buttonLegend}>Mejores</Text>
           </Pressable>
 
-          <Pressable style={styles.button}>
+          <Pressable onPress={getPeores} style={styles.button}>
             <Text style={styles.buttonLegend}>Peores</Text>
           </Pressable>
 
-          <Pressable style={styles.button2}>
+          <Pressable onPress={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
 
-        <View> 
-            <ScrollView>
-              <ScrollView horizontal>
-              <DataTable >
+        <View>
+          <ScrollView>
+            <ScrollView horizontal>
+              <DataTable>
                 <DataTable.Header>
                   <DataTable.Title>Id</DataTable.Title>
                   <DataTable.Title>Fecha</DataTable.Title>
@@ -121,17 +183,14 @@ React.useEffect(() => {
                   <DataTable.Title>% Desperdicio</DataTable.Title>
                   <DataTable.Title>Evidencia</DataTable.Title>
                 </DataTable.Header>
-                
-              {donativo.map((donativo) => 
-              (<Tabla {...donativo}/>)
-              )}
-              </DataTable>
-              </ScrollView>   
-          </ScrollView> 
-        </View>
 
-        
-        
+                {donativo.map((donativo) => (
+                  <Tabla {...donativo} />
+                ))}
+              </DataTable>
+            </ScrollView>
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -141,76 +200,76 @@ const styles = StyleSheet.create({
   logo: {
     height: 80,
     width: 150,
-    alignSelf: 'center',
-    marginTop:-15,
+    alignSelf: "center",
+    marginTop: -15,
   },
   container: {
     paddingBottom: 350,
-    margin: 30
+    margin: 30,
   },
   title: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     fontSize: 24,
-    marginBottom: 10
+    marginBottom: 10,
   },
   label: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#474545',
-    marginBottom: 10
+    fontWeight: "bold",
+    color: "#474545",
+    marginBottom: 10,
   },
   btnSpace: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 5,
-    paddingTop:15,
-    paddingBottom:10
+    paddingTop: 15,
+    paddingBottom: 10,
   },
   searchSpace: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 50
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 50,
   },
   buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 50
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 50,
   },
   button: {
     padding: 6,
-    backgroundColor: '#fb630f',
+    backgroundColor: "#fb630f",
     borderRadius: 10,
     width: 78,
-    alignContent: 'middle',
-    justifyContent: 'center'
+    alignContent: "middle",
+    justifyContent: "center",
   },
   button2: {
     padding: 10,
-    backgroundColor: '#fb630f',
+    backgroundColor: "#fb630f",
     borderRadius: 10,
     width: 100,
-    alignContent: 'middle',
-    justifyContent: 'center'
+    alignContent: "middle",
+    justifyContent: "center",
   },
   buttonIcon: {
     padding: 10,
-    backgroundColor: '#fb630f',
+    backgroundColor: "#fb630f",
     borderRadius: 10,
     width: 42,
-    alignItems: "center"
+    alignItems: "center",
   },
   buttonLegend: {
-    color: 'white',
+    color: "white",
     fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonLegend2: {
-    color: 'white',
+    color: "white",
     fontSize: 13,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  }
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
 
 export default Historial;
