@@ -16,6 +16,7 @@ import {
   Image,
   Pressable,
   ScrollView,
+  Alert,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
@@ -25,6 +26,7 @@ import Tabla from "../components/Tabla";
 
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
+  const [FilterVal, setFilterVal] = React.useState("");
 
   React.useEffect(() => {
     const collectionRef = collection(getData, "donativo");
@@ -51,45 +53,28 @@ const Historial = () => {
     return unsuscribe;
   }, []);
 
-  /* const searchBarFilter = async () => {
-    const collectionRef = collection(getData, "donativo");
-    const q = query(
-      collectionRef,
-      where(
-        getFilterVal,
-        "in",
-        "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"
-      )
-    );
-    const unsuscribe = onSnapshot(q, (querySnapshot) => {
-      setDonativo(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          cantidadCarga: doc.data().cantidadCarga,
-          cargaCiega: doc.data().cargaCiega,
-          conductor: doc.data().conductor,
-          donante: doc.data().donante,
-          donativo: doc.data().donativo,
-          fecha: doc.data().fecha,
-          hayDesperdicio: doc.data().hayDesperdicio,
-          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
-          razonDesperdicio: doc.data().razonDesperdicio,
-          tipoCarga: doc.data().tipoCarga,
-          uriFoto: doc.data().uriFoto,
-        }))
-      );
-    });
-  }; */
+  /* function FindFilterVal(FilterVal) {
+    return donativo.find(FilterVal => donativo === FilterVal);
+  } */
+
+  function searchButton () {
+    try {
+      console.log(FilterVal);
+
+    } catch (e) {
+      Alert.alert("Error" + e.message);
+    }
+  }
 
   const getMejores = async () => {
     const collectionRef = collection(getData, "donante");
-    const q = query(collectionRef, orderBy("nombre", "desc"));
+    const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
           nombre: doc.data().nombre,
-          cantidadCarga: doc.data().cantidadCarga,
+          cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
         }))
       );
@@ -98,13 +83,13 @@ const Historial = () => {
 
   const getPeores = async () => {
     const collectionRef = collection(getData, "donante");
-    const q = query(collectionRef, orderBy("nombre", "asc"));
+    const q = query(collectionRef, orderBy("cantidadDesperdicio", "desc"));
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
           nombre: doc.data().nombre,
-          cantidadCarga: doc.data().cantidadCarga,
+          cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
         }))
       );
@@ -113,7 +98,7 @@ const Historial = () => {
 
   const getCargaCiega = async () => {
     const collectionRef = collection(getData, "donativo");
-    const q = query(collectionRef, where("cargaCiega", "==", true));
+    const q = query(collectionRef, where("cargaCiega", "==", false));
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -153,31 +138,32 @@ const Historial = () => {
         <View>
           <Searchbar
             placeholder="Buscar..."
-            onChangeText={searchBarFilter}
-            value={getFilterVal}
+            onChangeText={setFilterVal}
+            value={FilterVal}
+            onIconPress={searchButton}
           />
         </View>
         <View style={styles.btnSpace}>
-          <TouchableOpacity style={styles.buttonIcon}>
+          <Pressable style={styles.buttonIcon}>
             <AntDesign
               name="calendar"
               size={24}
               color="white"
               backgroundColor="#fb630f"
             />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity onPress={getMejores} style={styles.button}>
+          <Pressable onPress={getMejores} style={styles.button}>
             <Text style={styles.buttonLegend}>Mejores</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity onPress={getPeores} style={styles.button}>
+          <Pressable onPress={getPeores} style={styles.button}>
             <Text style={styles.buttonLegend}>Peores</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity onPress={getCargaCiega} style={styles.button2}>
+          <Pressable onPress={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View>

@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
   getDownloadURL
 } from "firebase/storage";
-import { getDocs, addDoc, collection, initializeFirestore, doc, updateDoc, where, query } from "firebase/firestore";
+import { getDocs, addDoc, collection, initializeFirestore, doc, updateDoc, where, query, getFirestore } from "firebase/firestore";
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID } from '@env';
 // Initialize Firebase
 const firebaseConfig = {
