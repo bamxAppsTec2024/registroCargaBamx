@@ -12,9 +12,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { DataTable, Searchbar } from 'react-native-paper';
 
 import Tabla from "../components/Tabla";
+import ModalFotos from "../components/ModalFotos";
 
 const Historial = () => {
-
   const searchBarFilter = async () => {
     const collectionRef = collection(getData, "donativo");
     const q = query (collectionRef, where(getFilterVal, "in", "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"))
@@ -39,6 +39,14 @@ const Historial = () => {
   };
 
   const [donativo, setDonativo] = React.useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const cambiarEstado = () => {
+    setModalVisible (true);
+    console.log(modalVisible)
+    
+  }
+
 
 React.useEffect(() => {
 
@@ -103,6 +111,11 @@ React.useEffect(() => {
           </Pressable>
         </View>
 
+        <Pressable style={styles.button2} onPress={cambiarEstado}>
+          <Text style={styles.buttonLegend2}>Prueba Modal</Text>  
+        </Pressable>
+        <ModalFotos visible={modalVisible} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
+
         <View> 
             <ScrollView>
               <ScrollView horizontal>
@@ -129,8 +142,7 @@ React.useEffect(() => {
           </ScrollView> 
         </View>
 
-        
-        
+      
       </View>
     </SafeAreaView>
   );

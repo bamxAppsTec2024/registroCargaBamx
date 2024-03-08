@@ -1,16 +1,30 @@
-import {StyleSheet, Modal} from "react-native";
+import React, { useState, useEffect} from "react";
+import { set } from "react-hook-form";
+import {StyleSheet, Modal, View, Pressable, Text} from "react-native";
 
 
-export const ModalFotos = ({isOpen, visible}) => {
-    return (
-        <Modal visible={visible} transparent={true} onRequestClose={isOpen} animationType="fade">
-            <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                    <Text>Imagen</Text>
-                </View> 
-            </View>
-        </Modal>
-    );
+export const ModalFotos = ({modalVisible, setModalVisible}) => {
+
+  return (
+    <View>
+      {modalVisible && 
+        <Modal visible={modalVisible} transparent={true} animationType="fade">
+        <View style={styles.centeredView}>
+          <View>
+            <Pressable onPress={(modalVisible) => setModalVisible(!modalVisible)}>
+              <Text>Cerrar</Text>
+            </Pressable>
+          </View>
+            <View style={styles.modalView}>
+                <Text>Imagen</Text>
+            </View> 
+        </View>
+      </Modal>
+      }
+
+    </View>
+
+  );
 };
 
 const styles = StyleSheet.create({
