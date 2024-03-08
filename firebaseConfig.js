@@ -27,8 +27,6 @@ const db = initializeFirestore(fbApp, {
   experimentalForceLongPolling: true
 });
 
-const getData = getFirestore();
-
 const uploadToFirebase = async (uri, name, onProgress) => {
   const fetchResponse = await fetch(uri);
   const theBlob = await fetchResponse.blob();

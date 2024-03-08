@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getData } from "../firebaseConfig";
+import {db} from "../firebaseConfig";
 import {
   collection,
   onSnapshot,
@@ -16,7 +16,7 @@ import ModalFotos from "../components/ModalFotos";
 
 const Historial = () => {
   const searchBarFilter = async () => {
-    const collectionRef = collection(getData, "donativo");
+    const collectionRef = collection(db, "donativo");
     const q = query (collectionRef, where(getFilterVal, "in", "[conductor, donante, donativo, noComestible, noPerecedero, perecedero]"))
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -50,7 +50,7 @@ const Historial = () => {
 
 React.useEffect(() => {
 
-  const collectionRef = collection(getData, "donativo");
+  const collectionRef = collection(db, "donativo");
   const q = query(collectionRef, where("cantidadCarga", ">", "0"));
 
   const unsuscribe = onSnapshot(q, (querySnapshot) => {
