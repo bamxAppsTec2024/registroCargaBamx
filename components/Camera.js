@@ -24,7 +24,6 @@ const Camera = ({ setImageUri, setFileName, imageUri }) => {
 
         setImageUri(uri);
         setFileName(fileName);
-        console.log('URI:', uri);
       }
     } catch (e) {
       Alert.alert("Error" + e.message);
