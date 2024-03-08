@@ -1,9 +1,9 @@
 import React, { useState, useEffect} from "react";
 import { set } from "react-hook-form";
-import {StyleSheet, Modal, View, Pressable, Text} from "react-native";
+import {StyleSheet, Modal, View, Pressable, Text, Image} from "react-native";
 
 
-export const ModalFotos = ({modalVisible, setModalVisible}) => {
+export const ModalFotos = ({modalVisible, setModalVisible, cloudUrl}) => {
 
   return (
     <View>
@@ -15,13 +15,14 @@ export const ModalFotos = ({modalVisible, setModalVisible}) => {
               <Text>Cerrar</Text>
             </Pressable>
           </View>
+
             <View style={styles.modalView}>
-                <Text>Imagen</Text>
+              <Image source={{uri:cloudUrl}} style={styles.imageView}/>
             </View> 
         </View>
       </Modal>
-      }
-
+    
+    }
     </View>
 
   );
@@ -41,6 +42,10 @@ const styles = StyleSheet.create({
       padding: 35,
       alignItems: 'center',
     },
+    imageView: {
+      width: 200,
+      height: 200
+    }
   });
 
 export default ModalFotos;

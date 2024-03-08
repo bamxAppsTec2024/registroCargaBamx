@@ -1,6 +1,7 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Text, Pressable} from "react-native";
 import { DataTable } from "react-native-paper";
+import ModalFotos from "./ModalFotos";
 
 export default function Tabla({
   id,
@@ -14,8 +15,13 @@ export default function Tabla({
   porcentajeDesperdicio,
   razonDesperdicio,
   tipoCarga,
-  uriFoto,
-}) {
+  cloudUrl,
+}) 
+
+{  
+  const [modalVisible, setModalVisible] = useState(false);
+  //console.log(cloudUrl);
+
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
@@ -34,9 +40,14 @@ export default function Tabla({
                     <DataTable.Cell style ={styles.cellContainer}> {porcentajeDesperdicio} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {razonDesperdicio} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> 
-                        <Pressable style={styles.button2}>
+                        <Pressable style={styles.button2} onPress={() => setModalVisible(true)}>
                             <Text style={styles.buttonLegend}>Ver foto</Text>
                         </Pressable>
+                        <ModalFotos 
+                          visible={modalVisible} 
+                          modalVisible={modalVisible} 
+                          setModalVisible={setModalVisible} 
+                          cloudUrl = {cloudUrl}/>
                     </DataTable.Cell>   
                 </DataTable.Row>      
        </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {db} from "../firebaseConfig";
 import {
   collection,
@@ -68,6 +68,7 @@ React.useEffect(() => {
         razonDesperdicio: doc.data().razonDesperdicio,
         tipoCarga: doc.data().tipoCarga,
         uriFoto: doc.data().uriFoto,
+        cloudUrl: doc.data().cloudUrl,
       })
       )
     )});
@@ -110,11 +111,6 @@ React.useEffect(() => {
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
-
-        <Pressable style={styles.button2} onPress={cambiarEstado}>
-          <Text style={styles.buttonLegend2}>Prueba Modal</Text>  
-        </Pressable>
-        <ModalFotos visible={modalVisible} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
 
         <View> 
             <ScrollView>
@@ -207,7 +203,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fb630f',
     borderRadius: 10,
-    width: 42,
+    width: 50,
+    height:50,
     alignItems: "center"
   },
   buttonLegend: {
@@ -220,7 +217,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 13,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   tableTitle :{
     textAlign: "center",
