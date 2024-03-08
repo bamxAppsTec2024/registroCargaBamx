@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import { set } from "react-hook-form";
 import {StyleSheet, Modal, View, Pressable, Text, Image} from "react-native";
 
+import { EvilIcons } from '@expo/vector-icons';
 
 export const ModalFotos = ({modalVisible, setModalVisible, cloudUrl}) => {
 
@@ -10,13 +11,12 @@ export const ModalFotos = ({modalVisible, setModalVisible, cloudUrl}) => {
       {modalVisible && 
         <Modal visible={modalVisible} transparent={true} animationType="fade">
         <View style={styles.centeredView}>
-          <View>
+            <View style={styles.modalView}> 
             <Pressable onPress={(modalVisible) => setModalVisible(!modalVisible)}>
-              <Text>Cerrar</Text>
+              <View style={styles.viewIcon}>
+                <EvilIcons name="close" size={24} color="black"/>
+              </View>
             </Pressable>
-          </View>
-
-            <View style={styles.modalView}>
               <Image source={{uri:cloudUrl}} style={styles.imageView}/>
             </View> 
         </View>
@@ -36,15 +36,22 @@ const styles = StyleSheet.create({
       marginTop: 22,
     },
     modalView: {
-      margin: 20,
       backgroundColor: 'white',
       borderRadius: 20,
-      padding: 35,
+      
+      padding:5,
       alignItems: 'center',
+      backgroundColor:'#f2f3f3',
+      elevation:5
     },
     imageView: {
-      width: 200,
-      height: 200
+      width: 250,
+      height: 250,
+      borderRadius:15
+    },
+    viewIcon:{
+      alignItems:'flex-end',
+      paddingBottom:5,
     }
   });
 
