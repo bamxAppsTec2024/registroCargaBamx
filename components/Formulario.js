@@ -171,11 +171,6 @@ export default function App() {
     data.conductor = data.conductor.value;
     data.tiempoCarga = data.tiempoCarga.value;
     data.donante = data.donante.value;
-    data.donativo = data.donativo.value;
-    data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
-    data.razonDesperdicio = data.razonDesperdicio.value;
-    data.uriFoto = imageUri;
-    data.cloudUrl = downloadUrl;
 
     if (data.nuevoConductor) {
       createRecordCatalogo('conductor', data.nuevoConductor);
@@ -186,22 +181,33 @@ export default function App() {
       createRecordCatalogo('donante', data.nuevoDonante);
       data.donante = data.nuevoDonante;
     }
-    if (data.nuevoRazon) {
-      createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
-      data.razonDesperdicio = data.nuevoRazon;
-    }
 
-    if (data.nuevoDonativo) {
-      createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
-      data.donativo = data.nuevoDonativo;
-    }
-    calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
-    // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
-    delete data.hora;
     delete data.nuevoConductor;
     delete data.nuevoDonante;
-    delete data.nuevoRazon;
-    delete data.nuevoDonativo;
+
+    // Si no es carga ciega, procesa los datos que se recolectan cuando 
+    // la carga no es ciega
+    if (!watchCargaCiega) {
+      data.donativo = data.donativo.value;
+      data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
+      data.razonDesperdicio = data.razonDesperdicio.value;
+      data.uriFoto = imageUri;
+      data.cloudUrl = downloadUrl;
+      if (data.nuevoRazon) {
+        createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
+        data.razonDesperdicio = data.nuevoRazon;
+      }
+
+      if (data.nuevoDonativo) {
+        createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
+        data.donativo = data.nuevoDonativo;
+      }
+      calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
+
+      delete data.nuevoRazon;
+      delete data.nuevoDonativo;
+    }
+
   };
 
   useEffect(() => {
@@ -243,7 +249,10 @@ export default function App() {
           estructurarData(data, obj.downloadUrl);
           clearForm(); // Limpiar los campos del formulario
         });
-
+      } else {
+        estructurarData(data, '');
+        console.log('data', data);
+        clearForm(); // Limpiar los campos del formulario
       }
       saveRecord(data); // Guardar record en la base de datos
     } catch (e) {
