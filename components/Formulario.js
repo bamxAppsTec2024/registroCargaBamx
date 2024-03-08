@@ -265,7 +265,7 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
-            
+
             <View>
               <Text style={styles.label}>Unidad Camión</Text>
               <Controller
@@ -661,10 +661,10 @@ export default function App() {
                 }
               </View>
             }
-            
+
             {loading &&
               <View>
-                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner}/>
+                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner} />
                 <Text style={styles.submitmessage}>Enviando datos</Text>
               </View>
             }
