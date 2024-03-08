@@ -22,7 +22,7 @@ export default {
         "backgroundColor": "#ffffff"
       },
       "package": "com.yourcompany.yourappname",
-      "versionCode": 2
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"

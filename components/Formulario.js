@@ -45,6 +45,7 @@ export default function App() {
   const [showOtroRazon, setShowOtroRazon] = useState(false);
   const [cameraError, setCameraError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [updateEnCatalogos, setUpdateEnCatalogos]= useState(true);
 
   const defaultValuesForm = {
     fecha: new Date(),
@@ -77,14 +78,18 @@ export default function App() {
 
       const arrRazonesDesp = await getCatalogoDropdown('razonDesperdicio');
       setRazonesDesperdicio(arrRazonesDesp);
+
+      setUpdateEnCatalogos(false);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getStateValues();
-  }, []);
+    if(updateEnCatalogos) {
+      getStateValues();
+    }
+  }, [updateEnCatalogos]);
 
   const { control, handleSubmit, watch, reset, formState: { errors } } = useForm({
     defaultValues: defaultValuesForm
@@ -175,11 +180,13 @@ export default function App() {
     if (data.nuevoConductor) {
       createRecordCatalogo('conductor', data.nuevoConductor);
       data.conductor = data.nuevoConductor;
+      setUpdateEnCatalogos(true);
     }
 
     if (data.nuevoDonante) {
       createRecordCatalogo('donante', data.nuevoDonante);
       data.donante = data.nuevoDonante;
+      setUpdateEnCatalogos(true);
     }
 
     delete data.nuevoConductor;
@@ -196,11 +203,13 @@ export default function App() {
       if (data.nuevoRazon) {
         createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
         data.razonDesperdicio = data.nuevoRazon;
+        setUpdateEnCatalogos(true);
       }
 
       if (data.nuevoDonativo) {
         createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
         data.donativo = data.nuevoDonativo;
+        setUpdateEnCatalogos(true);
       }
       calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
 
