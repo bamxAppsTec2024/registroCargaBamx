@@ -22,23 +22,23 @@ export default function Tabla({
 }) 
   
 {  
+  //genermos un estado para visibilidad de modal
   const [modalVisible, setModalVisible] = useState(false);
-  //console.log(cloudUrl);
+  
+  const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
+  console.log(cargaCiegaTransform);
 
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
-                    {/* <DataTable.Cell style ={styles.cellContainer2}> <Text>1</Text> </DataTable.Cell> */}
-                    <DataTable.Cell style ={styles.cellContainer}> 
-                      <Text>24/02/2024</Text>
-                    </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer2}> <Text>1</Text> </DataTable.Cell> 
+                    <DataTable.Cell style ={styles.cellContainer}> <Text>24/02/2024</Text> </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {conductor}</DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> 
-                      <Text textBreakStrategy="balanced">{donativo}</Text> </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {donante} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {tipoCarga} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {cantidadCarga} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {cargaCiega} </DataTable.Cell>
+                    <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {hayDesperdicio} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {porcentajeDesperdicio} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {razonDesperdicio} </DataTable.Cell>

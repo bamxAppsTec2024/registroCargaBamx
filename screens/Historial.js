@@ -64,9 +64,17 @@ const Historial = () => {
     }
   }
 
+  const [showFilterCells, setShowFilterCells] = useState(false);
+
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
+
+    //genearamos un estado para saber qué campos debemos de mostrar
+    setShowFilterCells(true);
+    console.log(showFilterCells);
+
+    
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -94,9 +102,9 @@ const Historial = () => {
     });
   };
 
-  /*const getCargaCiega = async () => {
+  const getCargaCiega = async () => {
     const collectionRef = collection(db, "donativo");
-    const q = query(collectionRef, where("cargaCiega", "==", false));
+    const q = query(collectionRef, where("cargaCiega", "==", true));
    
 
   const unsuscribe = onSnapshot(q, (querySnapshot) => {
@@ -117,7 +125,7 @@ const Historial = () => {
       })
       )
     )});
-};*/
+}
   
 
   return (
@@ -151,11 +159,11 @@ const Historial = () => {
             <Text style={styles.buttonLegend}>Mejores</Text>
           </Pressable>
 
-          <Pressable onPress={getPeores} style={styles.button}>
+          <Pressable onPress={getPeores} style={styles.button} >
             <Text style={styles.buttonLegend}>Peores</Text>
           </Pressable>
 
-          <Pressable style={styles.button2}>
+          <Pressable onPress ={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
