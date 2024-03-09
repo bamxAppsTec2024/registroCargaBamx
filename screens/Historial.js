@@ -64,6 +64,13 @@ const Historial = () => {
     }
   }
 
+  //autogeneración de IDs en tabla para evitar usar 
+  //los id generados por Firebase
+  const donativoIds = donativo.map((donativo,index) => ({
+    ...donativo,
+    idDonativo: index +1,
+  }));
+
   const [showFilterCells, setShowFilterCells] = useState(false);
 
   const getMejores = async () => {
@@ -73,8 +80,6 @@ const Historial = () => {
     //genearamos un estado para saber qué campos debemos de mostrar
     setShowFilterCells(true);
     console.log(showFilterCells);
-
-    
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -127,7 +132,6 @@ const Historial = () => {
     )});
 }
   
-
   return (
     <SafeAreaView>
 
@@ -173,11 +177,11 @@ const Historial = () => {
             <ScrollView horizontal>
               <DataTable>
                 <DataTable.Header>
-                  <DataTable.Title style={styles.tableTitle2}>Id</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Fecha</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Conductor</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Donativo</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Donante</DataTable.Title>
+                  <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                  <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Fecha</DataTable.Title>
+                  <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
+                  <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donativo</DataTable.Title>
+                  <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
@@ -185,8 +189,8 @@ const Historial = () => {
                   <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
                 </DataTable.Header>
-                  {donativo.map((donativo) => (
-                    <Tabla {...donativo}/>
+                  {donativoIds.map((donativo, indexVal) => (
+                    <Tabla key={donativo.idDonativo} {...donativo}/>
                   ))}
               </DataTable>
             </ScrollView>
@@ -202,7 +206,6 @@ const styles = StyleSheet.create({
     height: 80,
     width: 150,
     alignSelf: "center",
-    marginTop: -15,
   },
   container: {
     paddingBottom: 350,
@@ -273,17 +276,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tableTitle :{
-    textAlign: "center",
+    justifyContent:'center',
     fontWeight:'bold',
     padding:10,
-    width: 110
   },
-  tableTitle2 :{
-    textAlign: "center",
-    fontWeight:'bold',
-    padding:10,
-    width: 50
-  }
 });
 
 export default Historial;

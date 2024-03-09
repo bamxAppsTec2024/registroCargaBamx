@@ -18,24 +18,25 @@ export default function Tabla({
   cloudUrl,
   nombre,
   cantidadCargaUtil,
-  cantidadDesperdicio
+  cantidadDesperdicio,
+  idDonativo
 }) 
   
 {  
   //genermos un estado para visibilidad de modal
   const [modalVisible, setModalVisible] = useState(false);
   
+  //transformamos nuestro booleano de carga ciega para mostrar en la tabla
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
-  console.log(cargaCiegaTransform);
 
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
-                    <DataTable.Cell style ={styles.cellContainer2}> <Text>1</Text> </DataTable.Cell> 
-                    <DataTable.Cell style ={styles.cellContainer}> <Text>24/02/2024</Text> </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {conductor}</DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {donativo}</DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {donante} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> <Text>24/02/2024</Text> </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {tipoCarga} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {cantidadCarga} </DataTable.Cell>
                     <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell>
@@ -69,16 +70,8 @@ const styles = StyleSheet.create({
     },
     cellContainer: {
       padding:10,
-      width: 100,
       height:50,
-      textAlign:'center',
-      flex:1,
-      flexWrap:'wrap'
-    },
-    cellContainer2: {
-      padding:10,
-      width: 50,
-      textAlign:'center'
+      justifyContent:'center',
     },
     button2: {
         padding: 10,
