@@ -29,11 +29,18 @@ export default function Tabla({
   //transformamos nuestro booleano de carga ciega para mostrar en la tabla
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
 
+  //Transformamos nuestra fecha usando las funciones to Date, 
+  //posteriormente enviamos solamente la información de la fecha
+  //sin el tiempo para mostrar en tabla
+  const fechaCarga = new Date(fecha.toDate());
+  const fechaRegistro = fechaCarga.toLocaleDateString();
+
+
     return (
         <View styles={styles.tableContainer}>             
                 <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> <Text>24/02/2024</Text> </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro} </DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
