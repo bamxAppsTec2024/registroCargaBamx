@@ -70,6 +70,34 @@ const Historial = () => {
   const [showCargaCiega, setShowCargaCiega] = useState(false);
   const [showHistorial, setShowHistorial] = useState(true);
 
+  const displayHistorial = async ()=> {
+    setShowMejores(false);
+    setShowCargaCiega(false);
+    setShowPeores(false);
+    setShowHistorial(true);
+    const collectionRef = collection(db, "donativo");
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
+
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          cloudUrl: doc.data().cloudUrl,
+        })
+        )
+      )});
+  }
+
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
@@ -84,6 +112,7 @@ const Historial = () => {
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
+          fecha: doc.data().fecha,
           nombre: doc.data().nombre,
           cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
@@ -108,6 +137,7 @@ const Historial = () => {
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
+          fecha: doc.data().fecha,
           nombre: doc.data().nombre,
           cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
@@ -151,7 +181,10 @@ const Historial = () => {
       <View style={styles.container}>
         <Image source={require("../assets/logoBamx.png")} style={styles.logo} />
         <View style={styles.innerContainer}>
-          <Text style={styles.title}>Ver Historial</Text>
+          <Pressable onPress={displayHistorial}>
+            <Text style={styles.title}>Ver Historial</Text>
+          </Pressable>
+          
         </View>
         <View>
           <Searchbar
@@ -183,7 +216,12 @@ const Historial = () => {
           <Pressable onPress ={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
+
         </View>
+        
+        <Pressable onPress={displayHistorial} style={styles.button}>
+            <Text style={styles.buttonLegend}>Eliminar Filtro</Text>
+          </Pressable>
 
         <View>
           <ScrollView>
@@ -223,7 +261,7 @@ const Historial = () => {
                {showCargaCiega&&
                  <DataTable.Header>
                  <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
-                 <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Fecha</DataTable.Title>
+                 <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Fecha</DataTable.Title>
                  <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
                  <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
                  <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
@@ -237,8 +275,6 @@ const Historial = () => {
                           showCargaCiega={showCargaCiega}
                           />
                   ))}
-
-                 
 
               </DataTable>
             </ScrollView>

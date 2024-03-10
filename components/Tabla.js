@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable} from "react-native";
 import { DataTable } from "react-native-paper";
 import ModalFotos from "./ModalFotos";
@@ -31,20 +31,46 @@ export default function Tabla({
   //transformamos nuestro booleano de carga ciega para mostrar en la tabla
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
 
-  //Transformamos nuestra fecha usando las funciones to Date, 
-  //posteriormente enviamos solamente la información de la fecha
-  //sin el tiempo para mostrar en tabla
-  //const fechaCarga = new Date(fecha.toDate());
-  //const fechaRegistro = fechaCarga.toLocaleDateString();
+  //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
+  const [fechaRegistro, setFechaRegistro] = useState(null);
 
+   //TODO: REVISAR BUG CUANDO VOLVEMOS A TABLAS CON FECHAS
+   //DESPUES DE VENIR DE MEJORES O PEORES. FECHA APARECE COMO UNDEFINDED
+   //ESTO SUCEDE AL OBTENER DATOS DE MEJORES O PEORES DEBIDO A QUE NO 
+   //EXISTE UN CAMPO FECHA
 
+  useEffect (() => {
+    if(showHistorial){
+      console.log(fecha)
+      //Transformamos nuestra fecha usando las funciones to Date, 
+      //posteriormente enviamos solamente la información de la fecha
+      //sin el tiempo para mostrar en tabla
+      const fechaCarga = new Date(fecha.toDate());
+      const fechaFormato = fechaCarga.toLocaleDateString();
+      setFechaRegistro(fechaFormato)
+    }
+  })
+
+  useEffect (() => {
+    if(showCargaCiega ){
+      setFechaRegistro(null)
+      //Transformamos nuestra fecha usando las funciones to Date, 
+      //posteriormente enviamos solamente la información de la fecha
+      //sin el tiempo para mostrar en tabla
+      const fechaCarga = new Date(fecha.toDate());
+      const fechaFormato = fechaCarga.toLocaleDateString();
+      setFechaRegistro(fechaFormato)
+    }
+  })
+
+  
+  console.log(fecha)
     return (
         <View styles={styles.tableContainer}>    
-        {
-          showHistorial&&
+        {showHistorial&&
           <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> fechaRegistro</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
@@ -91,7 +117,7 @@ export default function Tabla({
               {showCargaCiega && 
                  <DataTable.Row>
                   <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> fechaRegistro</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro}</DataTable.Cell>
                   <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                   <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
                   <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 
