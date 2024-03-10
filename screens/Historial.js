@@ -13,7 +13,6 @@ import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
 
 import Tabla from "../components/Tabla";
-import TablaMejores from "../components/TablaMejores";
 
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
@@ -97,7 +96,7 @@ const Historial = () => {
         )
       )});
   }
-
+  
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
@@ -112,17 +111,12 @@ const Historial = () => {
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
-          fecha: doc.data().fecha,
           nombre: doc.data().nombre,
           cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
         }))
       );
     });
-
-     {donativoIds.map((donativo, indexVal) => (
-                    <TablaMejores key={donativo.idDonativo} {...donativo} showMejores={showMejores}/>
-                  ))}
   };
 
   const getPeores = async () => {
@@ -137,7 +131,6 @@ const Historial = () => {
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
-          fecha: doc.data().fecha,
           nombre: doc.data().nombre,
           cantidadCargaUtil: doc.data().cantidadCargaUtil,
           cantidadDesperdicio: doc.data().cantidadDesperdicio,
@@ -267,14 +260,15 @@ const Historial = () => {
                  <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
                </DataTable.Header>}
                
-                  {donativoIds.map((donativo, indexVal) => (
-                    <Tabla key={donativo.idDonativo} {...donativo} 
+                {donativoIds.map((objDonativo, indexVal) => (
+                    console.log( "Hola", objDonativo, "arreglo donativo"),
+                    <Tabla key={objDonativo.idDonativo} {...objDonativo} 
                           showMejores={showMejores}
                           showPeores={showPeores}  
                           showHistorial={showHistorial}
                           showCargaCiega={showCargaCiega}
                           />
-                  ))}
+                ))}
 
               </DataTable>
             </ScrollView>

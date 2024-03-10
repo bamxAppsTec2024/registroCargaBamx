@@ -34,12 +34,12 @@ export default function Tabla({
   //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
   const [fechaRegistro, setFechaRegistro] = useState(null);
 
-   //TODO: REVISAR BUG CUANDO VOLVEMOS A TABLAS CON FECHAS
+   //TO DO: REVISAR BUG CUANDO VOLVEMOS A TABLAS CON FECHAS
    //DESPUES DE VENIR DE MEJORES O PEORES. FECHA APARECE COMO UNDEFINDED
    //ESTO SUCEDE AL OBTENER DATOS DE MEJORES O PEORES DEBIDO A QUE NO 
    //EXISTE UN CAMPO FECHA
 
-  useEffect (() => {
+  /*useEffect (() => {
     if(showHistorial){
       console.log(fecha)
       //Transformamos nuestra fecha usando las funciones to Date, 
@@ -52,7 +52,7 @@ export default function Tabla({
   })
 
   useEffect (() => {
-    if(showCargaCiega ){
+    if(showCargaCiega){
       setFechaRegistro(null)
       //Transformamos nuestra fecha usando las funciones to Date, 
       //posteriormente enviamos solamente la información de la fecha
@@ -61,16 +61,20 @@ export default function Tabla({
       const fechaFormato = fechaCarga.toLocaleDateString();
       setFechaRegistro(fechaFormato)
     }
-  })
+  })*/
+  var fechaBien;
 
-  
+  if(showCargaCiega || showHistorial){
+    console.log()
+    fechaBien = fecha.toString();
+  }
   console.log(fecha)
     return (
         <View styles={styles.tableContainer}>    
-        {showHistorial&&
-          <DataTable.Row>
+          {showHistorial&&
+            <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaBien}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
@@ -93,8 +97,8 @@ export default function Tabla({
                           setModalVisible={setModalVisible} 
                           cloudUrl = {cloudUrl}/>
                     </DataTable.Cell>   
-                </DataTable.Row>    
-        }         
+                </DataTable.Row>
+              }         
                  
                 {showMejores && 
                  <DataTable.Row>
@@ -117,7 +121,7 @@ export default function Tabla({
               {showCargaCiega && 
                  <DataTable.Row>
                   <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaBien}</DataTable.Cell>
                   <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                   <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
                   <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 
