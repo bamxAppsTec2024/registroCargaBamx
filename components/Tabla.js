@@ -19,7 +19,9 @@ export default function Tabla({
   nombre,
   cantidadCargaUtil,
   cantidadDesperdicio,
-  idDonativo
+  idDonativo, 
+  showMejores, showPeores,
+  showHistorial, showCargaCiega
 }) 
   
 {  
@@ -32,15 +34,17 @@ export default function Tabla({
   //Transformamos nuestra fecha usando las funciones to Date, 
   //posteriormente enviamos solamente la información de la fecha
   //sin el tiempo para mostrar en tabla
-  const fechaCarga = new Date(fecha.toDate());
-  const fechaRegistro = fechaCarga.toLocaleDateString();
+  //const fechaCarga = new Date(fecha.toDate());
+  //const fechaRegistro = fechaCarga.toLocaleDateString();
 
 
     return (
-        <View styles={styles.tableContainer}>             
-                <DataTable.Row>
+        <View styles={styles.tableContainer}>    
+        {
+          showHistorial&&
+          <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> fechaRegistro</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
@@ -63,7 +67,36 @@ export default function Tabla({
                           setModalVisible={setModalVisible} 
                           cloudUrl = {cloudUrl}/>
                     </DataTable.Cell>   
-                </DataTable.Row>      
+                </DataTable.Row>    
+        }         
+                 
+                {showMejores && 
+                 <DataTable.Row>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                  <DataTable.Cell>{nombre}</DataTable.Cell>
+                  <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
+                  <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                </DataTable.Row>    
+                } 
+
+                {showPeores && 
+                  <DataTable.Row>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                    <DataTable.Cell>{nombre}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                  </DataTable.Row>    
+                } 
+
+              {showCargaCiega && 
+                 <DataTable.Row>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> fechaRegistro</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
+                  <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 
+                 </DataTable.Row>     
+                } 
        </View>
     )
 }
