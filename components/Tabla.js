@@ -65,8 +65,8 @@ export default function Tabla({
   var fechaBien;
 
   if(showCargaCiega || showHistorial){
-    console.log()
-    fechaBien = fecha.toString();
+    //console.log()
+    //fechaBien = fecha.toString();
   }
   console.log(fecha)
     return (
