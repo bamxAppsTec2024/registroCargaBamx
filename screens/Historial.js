@@ -3,6 +3,7 @@ import { db } from "../firebaseConfig";
 import {
   collection,
   onSnapshot,
+  or,
   orderBy,
   query,
   where,
@@ -81,7 +82,44 @@ const Historial = () => {
   function searchButton() {
     try {
       console.log(FilterVal);
+      const value = FilterVal ? FilterVal : " ";
 
+      const collectionRef = collection(db, "donativo");
+      const q = query(collectionRef,
+        or(where('cantidadCarga', '==', value),
+           where('cargaCiega', '==', value),
+           where('cloudUrl', '==', value),
+           where('conductor', '==', value),
+           where('donante', '==', value),
+           where('donativo', '==', value),
+           where('fecha', '==', value),
+           where('hayDesperdicio', '==', value),
+           where('porcentajeDesperdicio', '==', value),
+           where('razonDesperdicio', '==', value),
+           where('tiempoCarga', '==', value),
+           where('tipoCarga', '==', value),
+           where('unidadCamion', '==', value),
+           where('uriFoto', '==', value)
+        )
+      );
+      const unsuscribe = onSnapshot(q, (querySnapshot) => {
+        setDonativo(
+          querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            cantidadCarga: doc.data().cantidadCarga,
+            cargaCiega: doc.data().cargaCiega,
+            conductor: doc.data().conductor,
+            donante: doc.data().donante,
+            donativo: doc.data().donativo,
+            fecha: doc.data().fecha,
+            hayDesperdicio: doc.data().hayDesperdicio,
+            porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+            razonDesperdicio: doc.data().razonDesperdicio,
+            tipoCarga: doc.data().tipoCarga,
+            cloudUrl: doc.data().cloudUrl,
+          }))
+        );
+      });
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
