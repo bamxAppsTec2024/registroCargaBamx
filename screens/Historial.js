@@ -18,6 +18,7 @@ import Tabla from "../components/Tabla";
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
   const [FilterVal, setFilterVal] = React.useState("");
+
   //Creamos un estado para mostrar los campos correspondientes 
   //al filtro de mejores
   const [showMejores, setShowMejores] = useState(false);
@@ -297,12 +298,13 @@ const Historial = () => {
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donativo</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Tipo Carga</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 80}]}>Cantidad</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 100}]}>Carga Ciega</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 130}]}>¿Hay desperdicio?</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 120}]}>% Desperdicio</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 140}]}>Razón Desperdicio</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 100}]}>Evidencia</DataTable.Title>
                   </DataTable.Header>}
 
                 {showMejores &&
@@ -330,7 +332,6 @@ const Historial = () => {
                   </DataTable.Header>}
 
                 {donativoIds.map((objDonativo) => (
-                  console.log(objDonativo),
                   <Tabla key={objDonativo.idDonativo} {...objDonativo}
                     showMejores={showMejores}
                     showPeores={showPeores}

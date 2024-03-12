@@ -42,29 +42,6 @@ export default function Tabla({
    //ESTO SUCEDE AL OBTENER DATOS DE MEJORES O PEORES DEBIDO A QUE NO 
    //EXISTE UN CAMPO FECHA
 
-  /*useEffect (() => {
-    if(showHistorial){
-      console.log(fecha)
-      //Transformamos nuestra fecha usando las funciones to Date, 
-      //posteriormente enviamos solamente la información de la fecha
-      //sin el tiempo para mostrar en tabla
-      const fechaCarga = new Date(fecha.toDate());
-      const fechaFormato = fechaCarga.toLocaleDateString();
-      setFechaRegistro(fechaFormato)
-    }
-  })
-
-  useEffect (() => {
-    if(showCargaCiega){
-      setFechaRegistro(null)
-      //Transformamos nuestra fecha usando las funciones to Date, 
-      //posteriormente enviamos solamente la información de la fecha
-      //sin el tiempo para mostrar en tabla
-      const fechaCarga = new Date(fecha.toDate());
-      const fechaFormato = fechaCarga.toLocaleDateString();
-      setFechaRegistro(fechaFormato)
-    }
-  })*/
   var fechaBien;
   //console.log("Estoy recibiendo esta fecha", fecha);
 
@@ -77,20 +54,16 @@ export default function Tabla({
           {showHistorial&&
             <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {tipoCarga} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {cantidadCarga} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {hayDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {porcentajeDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> {razonDesperdicio} </DataTable.Cell>
-                    <DataTable.Cell>{nombre}</DataTable.Cell>
-                    <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
-                    <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
-                    <DataTable.Cell style ={styles.cellContainer}> 
+                    <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {tipoCarga} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 80}]}> {cantidadCarga} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {cargaCiegaTransform} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 130}]}> {hayDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 120}]}> {porcentajeDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 140}]}> {razonDesperdicio} </DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> 
                         <Pressable style={styles.button2} onPress={() => setModalVisible(true)}>
                             <Text style={styles.buttonLegend}>Ver foto</Text>
                         </Pressable>
