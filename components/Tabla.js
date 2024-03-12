@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable} from "react-native";
 import { DataTable } from "react-native-paper";
 import ModalFotos from "./ModalFotos";
+import PropTypes from 'prop-types';
+
 
 export default function Tabla({
   id,
@@ -30,6 +32,7 @@ export default function Tabla({
   
   //transformamos nuestro booleano de carga ciega para mostrar en la tabla
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
+  hayDesperdicio= hayDesperdicio ? "Sí" : "No";
 
   //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
   const [fechaRegistro, setFechaRegistro] = useState(null);
@@ -63,18 +66,18 @@ export default function Tabla({
     }
   })*/
   var fechaBien;
+  //console.log("Estoy recibiendo esta fecha", fecha);
 
-  if(showCargaCiega || showHistorial){
-    //console.log()
-    //fechaBien = fecha.toString();
-  }
-  console.log(fecha)
+ /* if(showHistorial  || showCargaCiega) {
+    fechaBien = fecha.toString();
+    //console.log(fechaBien);
+  }*/
     return (
         <View styles={styles.tableContainer}>    
           {showHistorial&&
             <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaBien}</DataTable.Cell>
+                
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
@@ -121,7 +124,7 @@ export default function Tabla({
               {showCargaCiega && 
                  <DataTable.Row>
                   <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaBien}</DataTable.Cell>
+                
                   <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                   <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
                   <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 

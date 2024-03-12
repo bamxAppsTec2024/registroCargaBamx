@@ -49,7 +49,7 @@ const Historial = () => {
     return unsuscribe;
   }, []);
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
@@ -72,7 +72,7 @@ const Historial = () => {
     });
 
     return unsuscribe;
-  }, [showHistorial]);
+  }, [showHistorial,showCargaCiega]);*/
 
   /* function FindFilterVal(FilterVal) {
     return donativo.find(FilterVal => donativo === FilterVal);
@@ -89,17 +89,44 @@ const Historial = () => {
 
   //autogeneración de IDs en tabla para evitar usar 
   //los id generados por Firebase
-  const donativoIds = donativo.map((donativo, index) => ({
-    ...donativo,
+  const donativoIds = donativo.map((donativo, index) => {
+    //console.log ("soy fecha en donativo",donativo.fecha);
+    //const fecha = donativo.fecha == undefined ? new Date() : donativo.fecha;
+    
+    return{ 
+      ...donativo,
     idDonativo: index + 1,
-  }));
+    };
+  });
 
 
   const displayHistorial = async () => {
+
     setShowMejores(false);
     setShowCargaCiega(false);
     setShowPeores(false);
     setShowHistorial(true);
+
+    const collectionRef = collection(db, "donativo");
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          cloudUrl: doc.data().cloudUrl,
+        }))
+      );
+    });
   }
 
   const getMejores = async () => {
@@ -229,7 +256,6 @@ const Historial = () => {
                 {showHistorial &&
                   <DataTable.Header>
                     <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
-                    <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Fecha</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donativo</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
@@ -260,7 +286,6 @@ const Historial = () => {
                 {showCargaCiega &&
                   <DataTable.Header>
                     <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
-                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Fecha</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
                     <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
