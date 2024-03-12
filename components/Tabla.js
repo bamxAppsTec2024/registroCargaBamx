@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable} from "react-native";
 import { DataTable } from "react-native-paper";
 import ModalFotos from "./ModalFotos";
+import PropTypes from 'prop-types';
+
 
 export default function Tabla({
   id,
@@ -19,7 +21,9 @@ export default function Tabla({
   nombre,
   cantidadCargaUtil,
   cantidadDesperdicio,
-  idDonativo
+  idDonativo, 
+  showMejores, showPeores,
+  showHistorial, showCargaCiega
 }) 
   
 {  
@@ -28,19 +32,52 @@ export default function Tabla({
   
   //transformamos nuestro booleano de carga ciega para mostrar en la tabla
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
+  hayDesperdicio= hayDesperdicio ? "Sí" : "No";
 
-  //Transformamos nuestra fecha usando las funciones to Date, 
-  //posteriormente enviamos solamente la información de la fecha
-  //sin el tiempo para mostrar en tabla
-  const fechaCarga = new Date(fecha.toDate());
-  const fechaRegistro = fechaCarga.toLocaleDateString();
+  //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
+  const [fechaRegistro, setFechaRegistro] = useState(null);
 
+   //TO DO: REVISAR BUG CUANDO VOLVEMOS A TABLAS CON FECHAS
+   //DESPUES DE VENIR DE MEJORES O PEORES. FECHA APARECE COMO UNDEFINDED
+   //ESTO SUCEDE AL OBTENER DATOS DE MEJORES O PEORES DEBIDO A QUE NO 
+   //EXISTE UN CAMPO FECHA
 
+  /*useEffect (() => {
+    if(showHistorial){
+      console.log(fecha)
+      //Transformamos nuestra fecha usando las funciones to Date, 
+      //posteriormente enviamos solamente la información de la fecha
+      //sin el tiempo para mostrar en tabla
+      const fechaCarga = new Date(fecha.toDate());
+      const fechaFormato = fechaCarga.toLocaleDateString();
+      setFechaRegistro(fechaFormato)
+    }
+  })
+
+  useEffect (() => {
+    if(showCargaCiega){
+      setFechaRegistro(null)
+      //Transformamos nuestra fecha usando las funciones to Date, 
+      //posteriormente enviamos solamente la información de la fecha
+      //sin el tiempo para mostrar en tabla
+      const fechaCarga = new Date(fecha.toDate());
+      const fechaFormato = fechaCarga.toLocaleDateString();
+      setFechaRegistro(fechaFormato)
+    }
+  })*/
+  var fechaBien;
+  //console.log("Estoy recibiendo esta fecha", fecha);
+
+ /* if(showHistorial  || showCargaCiega) {
+    fechaBien = fecha.toString();
+    //console.log(fechaBien);
+  }*/
     return (
-        <View styles={styles.tableContainer}>             
-                <DataTable.Row>
+        <View styles={styles.tableContainer}>    
+          {showHistorial&&
+            <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {fechaRegistro} </DataTable.Cell>
+                
                     <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {donativo}</DataTable.Cell>
                     <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
@@ -63,7 +100,36 @@ export default function Tabla({
                           setModalVisible={setModalVisible} 
                           cloudUrl = {cloudUrl}/>
                     </DataTable.Cell>   
-                </DataTable.Row>      
+                </DataTable.Row>
+              }         
+                 
+                {showMejores && 
+                 <DataTable.Row>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                  <DataTable.Cell>{nombre}</DataTable.Cell>
+                  <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
+                  <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                </DataTable.Row>    
+                } 
+
+                {showPeores && 
+                  <DataTable.Row>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                    <DataTable.Cell>{nombre}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
+                    <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                  </DataTable.Row>    
+                } 
+
+              {showCargaCiega && 
+                 <DataTable.Row>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
+                
+                  <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
+                  <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 
+                 </DataTable.Row>     
+                } 
        </View>
     )
 }
