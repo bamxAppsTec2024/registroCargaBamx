@@ -9,16 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Pressable,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView, Alert, } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
 
@@ -27,6 +18,13 @@ import Tabla from "../components/Tabla";
 const Historial = () => {
   const [donativo, setDonativo] = React.useState([]);
   const [FilterVal, setFilterVal] = React.useState("");
+  //Creamos un estado para mostrar los campos correspondientes 
+  //al filtro de mejores
+  const [showMejores, setShowMejores] = useState(false);
+  const [showPeores, setShowPeores] = useState(false);
+  const [showCargaCiega, setShowCargaCiega] = useState(false);
+  const [showHistorial, setShowHistorial] = useState(true);
+
   React.useEffect(() => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
@@ -51,6 +49,35 @@ const Historial = () => {
 
     return unsuscribe;
   }, []);
+
+  /*React.useEffect(() => {
+    const collectionRef = collection(db, "donativo");
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          cloudUrl: doc.data().cloudUrl,
+        }))
+      );
+    });
+
+    return unsuscribe;
+  }, [showHistorial,showCargaCiega]);*/
+
+  /* function FindFilterVal(FilterVal) {
+    return donativo.find(FilterVal => donativo === FilterVal);
+  } */
 
   function searchButton() {
     try {
@@ -100,20 +127,56 @@ const Historial = () => {
 
   //autogeneración de IDs en tabla para evitar usar 
   //los id generados por Firebase
-  const donativoIds = donativo.map((donativo, index) => ({
-    ...donativo,
+  const donativoIds = donativo.map((donativo, index) => {
+    //console.log ("soy fecha en donativo",donativo.fecha);
+    //const fecha = donativo.fecha == undefined ? new Date() : donativo.fecha;
+    
+    return{ 
+      ...donativo,
     idDonativo: index + 1,
-  }));
+    };
+  });
 
-  const [showFilterCells, setShowFilterCells] = useState(false);
+
+  const displayHistorial = async () => {
+
+    setShowMejores(false);
+    setShowCargaCiega(false);
+    setShowPeores(false);
+    setShowHistorial(true);
+
+    const collectionRef = collection(db, "donativo");
+    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          cloudUrl: doc.data().cloudUrl,
+        }))
+      );
+    });
+  }
 
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
 
-    //genearamos un estado para saber qué campos debemos de mostrar
-    setShowFilterCells(true);
-    console.log(showFilterCells);
+    //al hacer click en el filtro cambiamos los estados de los otros filtros
+    //esto en dado caso que se hayan usado anteriormente
+    setShowMejores(true);
+    setShowCargaCiega(false);
+    setShowPeores(false);
+    setShowHistorial(false);
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -130,6 +193,11 @@ const Historial = () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadDesperdicio", "desc"));
 
+    setShowMejores(false);
+    setShowCargaCiega(false);
+    setShowPeores(true);
+    setShowHistorial(false);
+
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
@@ -145,6 +213,10 @@ const Historial = () => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", true));
 
+    setShowMejores(false);
+    setShowCargaCiega(true);
+    setShowPeores(false);
+    setShowHistorial(false);
 
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
@@ -173,7 +245,10 @@ const Historial = () => {
       <View style={styles.container}>
         <Image source={require("../assets/logoBamx.png")} style={styles.logo} />
         <View style={styles.innerContainer}>
-          <Text style={styles.title}>Ver Historial</Text>
+          <Pressable onPress={displayHistorial}>
+            <Text style={styles.title}>Ver Historial</Text>
+          </Pressable>
+
         </View>
         <View>
           <Searchbar
@@ -205,28 +280,65 @@ const Historial = () => {
           <Pressable onPress={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
+
         </View>
+
+        <Pressable onPress={displayHistorial} style={styles.button}>
+          <Text style={styles.buttonLegend}>Eliminar Filtro</Text>
+        </Pressable>
 
         <View>
           <ScrollView>
             <ScrollView horizontal>
               <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
-                  <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Fecha</DataTable.Title>
-                  <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
-                  <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donativo</DataTable.Title>
-                  <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
-                  <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
-                </DataTable.Header>
-                {donativoIds.map((donativo, indexVal) => (
-                  <Tabla key={donativo.idDonativo} {...donativo} />
+                {showHistorial &&
+                  <DataTable.Header>
+                    <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donativo</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Tipo Carga</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Cantidad</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
+                  </DataTable.Header>}
+
+                {showMejores &&
+                  <DataTable.Header>
+                    <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                  </DataTable.Header>}
+
+                {showPeores &&
+                  <DataTable.Header>
+                    <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                  </DataTable.Header>}
+
+                {showCargaCiega &&
+                  <DataTable.Header>
+                    <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
+                    <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
+                  </DataTable.Header>}
+
+                {donativoIds.map((objDonativo) => (
+                  console.log(objDonativo),
+                  <Tabla key={objDonativo.idDonativo} {...objDonativo}
+                    showMejores={showMejores}
+                    showPeores={showPeores}
+                    showHistorial={showHistorial}
+                    showCargaCiega={showCargaCiega}
+                  />
                 ))}
+
               </DataTable>
             </ScrollView>
           </ScrollView>
