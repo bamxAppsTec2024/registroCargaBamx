@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import {db} from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 import {
   collection,
   onSnapshot,
+  or,
   orderBy,
   query,
   where,
@@ -51,14 +52,47 @@ const Historial = () => {
     return unsuscribe;
   }, []);
 
-  /* function FindFilterVal(FilterVal) {
-    return donativo.find(FilterVal => donativo === FilterVal);
-  } */
-
-  function searchButton () {
+  function searchButton() {
     try {
       console.log(FilterVal);
+      const value = FilterVal ? FilterVal : " ";
 
+      const collectionRef = collection(db, "donativo");
+      const q = query(collectionRef,
+        or(where('cantidadCarga', '==', value),
+           where('cargaCiega', '==', value),
+           where('cloudUrl', '==', value),
+           where('conductor', '==', value),
+           where('donante', '==', value),
+           where('donativo', '==', value),
+           where('fecha', '==', value),
+           where('hayDesperdicio', '==', value),
+           where('porcentajeDesperdicio', '==', value),
+           where('razonDesperdicio', '==', value),
+           where('tiempoCarga', '==', value),
+           where('tipoCarga', '==', value),
+           where('unidadCamion', '==', value),
+           where('uriFoto', '==', value)
+        )
+      );
+      const unsuscribe = onSnapshot(q, (querySnapshot) => {
+        setDonativo(
+          querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            cantidadCarga: doc.data().cantidadCarga,
+            cargaCiega: doc.data().cargaCiega,
+            conductor: doc.data().conductor,
+            donante: doc.data().donante,
+            donativo: doc.data().donativo,
+            fecha: doc.data().fecha,
+            hayDesperdicio: doc.data().hayDesperdicio,
+            porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+            razonDesperdicio: doc.data().razonDesperdicio,
+            tipoCarga: doc.data().tipoCarga,
+            cloudUrl: doc.data().cloudUrl,
+          }))
+        );
+      });
     } catch (e) {
       Alert.alert("Error" + e.message);
     }
@@ -66,9 +100,9 @@ const Historial = () => {
 
   //autogeneración de IDs en tabla para evitar usar 
   //los id generados por Firebase
-  const donativoIds = donativo.map((donativo,index) => ({
+  const donativoIds = donativo.map((donativo, index) => ({
     ...donativo,
-    idDonativo: index +1,
+    idDonativo: index + 1,
   }));
 
   const [showFilterCells, setShowFilterCells] = useState(false);
@@ -110,28 +144,29 @@ const Historial = () => {
   const getCargaCiega = async () => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", true));
-   
 
-  const unsuscribe = onSnapshot(q, (querySnapshot) => {
-    setDonativo(
-      querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        cantidadCarga: doc.data().cantidadCarga,
-        cargaCiega: doc.data().cargaCiega,
-        conductor: doc.data().conductor,
-        donante: doc.data().donante,
-        donativo: doc.data().donativo,
-        fecha: doc.data().fecha,
-        hayDesperdicio: doc.data().hayDesperdicio,
-        porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
-        razonDesperdicio: doc.data().razonDesperdicio,
-        tipoCarga: doc.data().tipoCarga,
-        cloudUrl: doc.data().cloudUrl,
-      })
+
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      setDonativo(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          cantidadCarga: doc.data().cantidadCarga,
+          cargaCiega: doc.data().cargaCiega,
+          conductor: doc.data().conductor,
+          donante: doc.data().donante,
+          donativo: doc.data().donativo,
+          fecha: doc.data().fecha,
+          hayDesperdicio: doc.data().hayDesperdicio,
+          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
+          razonDesperdicio: doc.data().razonDesperdicio,
+          tipoCarga: doc.data().tipoCarga,
+          cloudUrl: doc.data().cloudUrl,
+        })
+        )
       )
-    )});
-}
-  
+    });
+  }
+
   return (
     <SafeAreaView>
 
@@ -167,7 +202,7 @@ const Historial = () => {
             <Text style={styles.buttonLegend}>Peores</Text>
           </Pressable>
 
-          <Pressable onPress ={getCargaCiega} style={styles.button2}>
+          <Pressable onPress={getCargaCiega} style={styles.button2}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
           </Pressable>
         </View>
@@ -189,13 +224,13 @@ const Historial = () => {
                   <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
                   <DataTable.Title style={styles.tableTitle}>Evidencia</DataTable.Title>
                 </DataTable.Header>
-                  {donativoIds.map((donativo, indexVal) => (
-                    <Tabla key={donativo.idDonativo} {...donativo}/>
-                  ))}
+                {donativoIds.map((donativo, indexVal) => (
+                  <Tabla key={donativo.idDonativo} {...donativo} />
+                ))}
               </DataTable>
             </ScrollView>
           </ScrollView>
-        </View>    
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -260,7 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fb630f",
     borderRadius: 10,
     width: 50,
-    height:50,
+    height: 50,
     alignItems: "center"
   },
   buttonLegend: {
@@ -275,10 +310,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  tableTitle :{
-    justifyContent:'center',
-    fontWeight:'bold',
-    padding:10,
+  tableTitle: {
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    padding: 10,
   },
 });
 
