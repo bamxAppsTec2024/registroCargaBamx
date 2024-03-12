@@ -12,6 +12,7 @@ import {
 import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView, Alert, } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
+import { MaterialIcons } from '@expo/vector-icons';
 
 import Tabla from "../components/Tabla";
 
@@ -26,6 +27,7 @@ const Historial = () => {
   const [showCargaCiega, setShowCargaCiega] = useState(false);
   const [showHistorial, setShowHistorial] = useState(true);
 
+  
   React.useEffect(() => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
@@ -51,34 +53,6 @@ const Historial = () => {
     return unsuscribe;
   }, []);
 
-  /*React.useEffect(() => {
-    const collectionRef = collection(db, "donativo");
-    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
-    const unsuscribe = onSnapshot(q, (querySnapshot) => {
-      setDonativo(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          cantidadCarga: doc.data().cantidadCarga,
-          cargaCiega: doc.data().cargaCiega,
-          conductor: doc.data().conductor,
-          donante: doc.data().donante,
-          donativo: doc.data().donativo,
-          fecha: doc.data().fecha,
-          hayDesperdicio: doc.data().hayDesperdicio,
-          porcentajeDesperdicio: doc.data().porcentajeDesperdicio,
-          razonDesperdicio: doc.data().razonDesperdicio,
-          tipoCarga: doc.data().tipoCarga,
-          cloudUrl: doc.data().cloudUrl,
-        }))
-      );
-    });
-
-    return unsuscribe;
-  }, [showHistorial,showCargaCiega]);*/
-
-  /* function FindFilterVal(FilterVal) {
-    return donativo.find(FilterVal => donativo === FilterVal);
-  } */
 
   function searchButton() {
     try {
@@ -261,13 +235,8 @@ const Historial = () => {
         </View>
 
         <View style={styles.btnSpace}>
-          <Pressable style={styles.buttonIcon}>
-            <AntDesign
-              name="calendar"
-              size={24}
-              color="white"
-              backgroundColor="#fb630f"
-            />
+          <Pressable style={styles.buttonIcon} onPress={displayHistorial}>
+            <MaterialIcons name="cancel" size={25} color="white" backgroundColor="#fb630f"/>
           </Pressable>
 
           <Pressable onPress={getMejores} style={styles.button}>
@@ -283,10 +252,6 @@ const Historial = () => {
           </Pressable>
 
         </View>
-
-        <Pressable onPress={displayHistorial} style={styles.button}>
-          <Text style={styles.buttonLegend}>Eliminar Filtro</Text>
-        </Pressable>
 
         <View>
           <ScrollView>
