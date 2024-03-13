@@ -6,23 +6,10 @@ import PropTypes from 'prop-types';
 
 
 export default function Tabla({
-  id,
-  cantidadCarga,
-  cargaCiega,
-  conductor,
-  donante,
-  donativo,
-  fecha,
-  hayDesperdicio,
-  porcentajeDesperdicio,
-  razonDesperdicio,
-  tipoCarga,
-  cloudUrl,
-  nombre,
-  cantidadCargaUtil,
-  cantidadDesperdicio,
-  idDonativo, 
-  showMejores, showPeores,
+  id, cantidadCarga, cargaCiega, conductor,
+  donante, donativo, fecha, hayDesperdicio, porcentajeDesperdicio,
+  razonDesperdicio, tipoCarga, cloudUrl, nombre, cantidadCargaUtil,
+  cantidadDesperdicio, idDonativo, showMejores, showPeores,
   showHistorial, showCargaCiega
 }) 
   

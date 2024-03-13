@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import { db } from "../firebaseConfig";
-import {
-  collection,
-  onSnapshot,
-  or,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
+import {collection, onSnapshot, or, orderBy, query, where, } from "firebase/firestore";
 
-import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView, Alert, } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Image, Pressable, ScrollView, Alert, TouchableOpacity, } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { DataTable, Searchbar } from "react-native-paper";
 import { MaterialIcons } from '@expo/vector-icons';
@@ -26,6 +19,18 @@ const Historial = () => {
   const [showPeores, setShowPeores] = useState(false);
   const [showCargaCiega, setShowCargaCiega] = useState(false);
   const [showHistorial, setShowHistorial] = useState(true);
+
+  //Generamos estados paginación para la tabla 
+  const [page, setPage] = useState(0);
+
+  //Definimos cuántos itempos por página vamos a mostrar
+  const [numberOfItemsPerPageList] = React.useState([5, 6, 7]);
+  const [itemsPerPage, onItemsPerPageChange] = React.useState(numberOfItemsPerPageList[0] );
+  
+  //Calculamos cuántas páginas se necesitaran basado en los 
+  //elementos por página
+  const from = page * itemsPerPage;
+  const to = Math.min((page + 1) * itemsPerPage, donativo.length);
 
   
   React.useEffect(() => {
@@ -102,10 +107,7 @@ const Historial = () => {
 
   //autogeneración de IDs en tabla para evitar usar 
   //los id generados por Firebase
-  const donativoIds = donativo.map((donativo, index) => {
-    //console.log ("soy fecha en donativo",donativo.fecha);
-    //const fecha = donativo.fecha == undefined ? new Date() : donativo.fecha;
-    
+  const donativoIds = donativo.map((donativo, index) => {    
     return{ 
       ...donativo,
     idDonativo: index + 1,
@@ -119,6 +121,7 @@ const Historial = () => {
     setShowCargaCiega(false);
     setShowPeores(false);
     setShowHistorial(true);
+    setIsPressed(!isPressed);
 
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
@@ -145,6 +148,8 @@ const Historial = () => {
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
     const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
+
+    setIsPressed(!isPressed);
 
     //al hacer click en el filtro cambiamos los estados de los otros filtros
     //esto en dado caso que se hayan usado anteriormente
@@ -188,6 +193,8 @@ const Historial = () => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", true));
 
+    setIsPressed(!isPressed);
+
     setShowMejores(false);
     setShowCargaCiega(true);
     setShowPeores(false);
@@ -212,11 +219,13 @@ const Historial = () => {
         )
       )
     });
+
+    
   }
 
   return (
     <SafeAreaView>
-
+    <View style={styles.containerMain}>
       <View style={styles.container}>
         <Image source={require("../assets/logoBamx.png")} style={styles.logo} />
         <View style={styles.innerContainer}>
@@ -235,22 +244,21 @@ const Historial = () => {
         </View>
 
         <View style={styles.btnSpace}>
-          <Pressable style={styles.buttonIcon} onPress={displayHistorial}>
+          <TouchableOpacity onPress={displayHistorial} style={[styles.buttonIcon]}>
             <MaterialIcons name="cancel" size={25} color="white" backgroundColor="#fb630f"/>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable onPress={getMejores} style={styles.button}>
+          <TouchableOpacity onPress={getMejores} style={[styles.button, showMejores && styles.buttonPressed]}>
             <Text style={styles.buttonLegend}>Mejores</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable onPress={getPeores} style={styles.button} >
+          <TouchableOpacity onPress={getPeores}style={[styles.button, showPeores && styles.buttonPressed]} >
             <Text style={styles.buttonLegend}>Peores</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable onPress={getCargaCiega} style={styles.button2}>
+          <TouchableOpacity onPress={getCargaCiega} style={[styles.button, showCargaCiega && styles.buttonPressed]}>
             <Text style={styles.buttonLegend2}>Carga Ciega</Text>
-          </Pressable>
-
+          </TouchableOpacity>
         </View>
 
         <View>
@@ -296,7 +304,7 @@ const Historial = () => {
                     <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Carga Ciega</DataTable.Title>
                   </DataTable.Header>}
 
-                {donativoIds.map((objDonativo) => (
+                {donativoIds.slice(from,to).map((objDonativo) => (
                   <Tabla key={objDonativo.idDonativo} {...objDonativo}
                     showMejores={showMejores}
                     showPeores={showPeores}
@@ -305,10 +313,24 @@ const Historial = () => {
                   />
                 ))}
 
+                <DataTable.Pagination
+                  page={page}
+                  numberOfPages={Math.ceil(donativo.length / itemsPerPage)}
+                  onPageChange={(page) => setPage(page)}
+                  label={`${from + 1}-${to} of ${donativo.length}`}
+                  numberOfItemsPerPageList={numberOfItemsPerPageList}
+                  numberOfItemsPerPage={itemsPerPage}
+                  onItemsPerPageChange={onItemsPerPageChange}
+                  showFastPaginationControls
+                  selectPageDropdownLabel={'Rows per page'}
+                  style = {styles.tableNav}
+                />
+
               </DataTable>
             </ScrollView>
           </ScrollView>
         </View>
+      </View>
       </View>
     </SafeAreaView>
   );
@@ -319,10 +341,13 @@ const styles = StyleSheet.create({
     height: 80,
     width: 150,
     alignSelf: "center",
+    marginTop:-20
+  },
+  containerMain: {
+    margin: 30
   },
   container: {
-    paddingBottom: 350,
-    margin: 30,
+    paddingBottom: 2000
   },
   title: {
     color: "black",
@@ -360,6 +385,14 @@ const styles = StyleSheet.create({
     alignContent: "middle",
     justifyContent: "center",
   },
+  buttonPressed: {
+    padding: 6,
+    backgroundColor: "#e7a716",
+    borderRadius: 10,
+    width: 78,
+    alignContent: "middle",
+    justifyContent: "center",
+  },  
   button2: {
     padding: 10,
     backgroundColor: "#fb630f",
@@ -392,6 +425,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     fontWeight: 'bold',
     padding: 10,
+  },
+  tableNav: {
+    justifyContent: 'flex-start',
   },
 });
 
