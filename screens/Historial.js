@@ -116,15 +116,13 @@ const Historial = () => {
 
 
   const displayHistorial = async () => {
-
     setShowMejores(false);
     setShowCargaCiega(false);
     setShowPeores(false);
     setShowHistorial(true);
-    setIsPressed(!isPressed);
 
     const collectionRef = collection(db, "donativo");
-    const q = query(collectionRef, orderBy("cantidadCarga", "desc"));
+    const q = query(collectionRef, orderBy("cantidadCarga", "asc"));
     const unsuscribe = onSnapshot(q, (querySnapshot) => {
       setDonativo(
         querySnapshot.docs.map((doc) => ({
@@ -147,9 +145,7 @@ const Historial = () => {
 
   const getMejores = async () => {
     const collectionRef = collection(db, "donante");
-    const q = query(collectionRef, orderBy("cantidadCargaUtil", "desc"));
-
-    setIsPressed(!isPressed);
+    const q = query(collectionRef, orderBy("cantidadCargaUtil", "asc"));
 
     //al hacer click en el filtro cambiamos los estados de los otros filtros
     //esto en dado caso que se hayan usado anteriormente
@@ -192,8 +188,6 @@ const Historial = () => {
   const getCargaCiega = async () => {
     const collectionRef = collection(db, "donativo");
     const q = query(collectionRef, where("cargaCiega", "==", true));
-
-    setIsPressed(!isPressed);
 
     setShowMejores(false);
     setShowCargaCiega(true);
