@@ -45,7 +45,6 @@ export default function App() {
   const [showOtroRazon, setShowOtroRazon] = useState(false);
   const [cameraError, setCameraError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [updateEnCatalogos, setUpdateEnCatalogos]= useState(true);
 
   const defaultValuesForm = {
     fecha: new Date(),
@@ -78,18 +77,14 @@ export default function App() {
 
       const arrRazonesDesp = await getCatalogoDropdown('razonDesperdicio');
       setRazonesDesperdicio(arrRazonesDesp);
-
-      setUpdateEnCatalogos(false);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    if(updateEnCatalogos) {
-      getStateValues();
-    }
-  }, [updateEnCatalogos]);
+    getStateValues();
+  }, []);
 
   const { control, handleSubmit, watch, reset, formState: { errors } } = useForm({
     defaultValues: defaultValuesForm
@@ -176,47 +171,37 @@ export default function App() {
     data.conductor = data.conductor.value;
     data.tiempoCarga = data.tiempoCarga.value;
     data.donante = data.donante.value;
+    data.donativo = data.donativo.value;
+    data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
+    data.razonDesperdicio = data.razonDesperdicio.value;
+    data.uriFoto = imageUri;
+    data.cloudUrl = downloadUrl;
 
     if (data.nuevoConductor) {
       createRecordCatalogo('conductor', data.nuevoConductor);
       data.conductor = data.nuevoConductor;
-      setUpdateEnCatalogos(true);
     }
 
     if (data.nuevoDonante) {
       createRecordCatalogo('donante', data.nuevoDonante);
       data.donante = data.nuevoDonante;
-      setUpdateEnCatalogos(true);
+    }
+    if (data.nuevoRazon) {
+      createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
+      data.razonDesperdicio = data.nuevoRazon;
     }
 
+    if (data.nuevoDonativo) {
+      createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
+      data.donativo = data.nuevoDonativo;
+    }
+    calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
+    // Eliminar hora de la data debido a que se incluye en fecha al crear new Date()
+    delete data.hora;
     delete data.nuevoConductor;
     delete data.nuevoDonante;
-
-    // Si no es carga ciega, procesa los datos que se recolectan cuando 
-    // la carga no es ciega
-    if (!watchCargaCiega) {
-      data.donativo = data.donativo.value;
-      data.porcentajeDesperdicio = data.porcentajeDesperdicio.value;
-      data.razonDesperdicio = data.razonDesperdicio.value;
-      data.uriFoto = imageUri;
-      data.cloudUrl = downloadUrl;
-      if (data.nuevoRazon) {
-        createRecordCatalogo('razonDesperdicio', data.nuevoRazon);
-        data.razonDesperdicio = data.nuevoRazon;
-        setUpdateEnCatalogos(true);
-      }
-
-      if (data.nuevoDonativo) {
-        createRecordCatalogo(dicTiposDonativos[watchTipoCarga], data.nuevoDonativo);
-        data.donativo = data.nuevoDonativo;
-        setUpdateEnCatalogos(true);
-      }
-      calcularCantidadCarga(data.donante, data.cantidadCarga, data.porcentajeDesperdicio);
-
-      delete data.nuevoRazon;
-      delete data.nuevoDonativo;
-    }
-
+    delete data.nuevoRazon;
+    delete data.nuevoDonativo;
   };
 
   useEffect(() => {
@@ -258,10 +243,7 @@ export default function App() {
           estructurarData(data, obj.downloadUrl);
           clearForm(); // Limpiar los campos del formulario
         });
-      } else {
-        estructurarData(data, '');
-        console.log('data', data);
-        clearForm(); // Limpiar los campos del formulario
+
       }
       saveRecord(data); // Guardar record en la base de datos
     } catch (e) {
@@ -283,7 +265,7 @@ export default function App() {
           enabled
         >
           <View style={styles.container}>
-
+            
             <View>
               <Text style={styles.label}>Unidad Camión</Text>
               <Controller
@@ -679,10 +661,10 @@ export default function App() {
                 }
               </View>
             }
-
+            
             {loading &&
               <View>
-                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner} />
+                <EvilIcons name="spinner" size={40} color="black" style={styles.spinner}/>
                 <Text style={styles.submitmessage}>Enviando datos</Text>
               </View>
             }
