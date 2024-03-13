@@ -34,6 +34,18 @@ export default function Tabla({
   const cargaCiegaTransform = cargaCiega ? "Sí" : "No";
   hayDesperdicio= hayDesperdicio ? "Sí" : "No";
 
+  //Limitamos a 2 decimales los resultados de cantidad de carga útil y 
+  //cantidad de desperdicio recibidos
+  if(showMejores || showPeores)
+  {   
+    parseFloat(cantidadCargaUtil);
+    cantidadCargaUtil = Math.round(cantidadCargaUtil * 100) / 100;
+
+    parseFloat(cantidadDesperdicio);
+    cantidadDesperdicio = Math.round(cantidadDesperdicio * 100) / 100;
+  }
+  
+
   //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
   const [fechaRegistro, setFechaRegistro] = useState(null);
 
@@ -79,28 +91,27 @@ export default function Tabla({
                 {showMejores && 
                  <DataTable.Row>
                   <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                  <DataTable.Cell>{nombre}</DataTable.Cell>
-                  <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
-                  <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 200}]}>{nombre}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 150}]}>{cantidadCargaUtil}</DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 180}]}>{cantidadDesperdicio}</DataTable.Cell>
                 </DataTable.Row>    
                 } 
 
                 {showPeores && 
                   <DataTable.Row>
                     <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                    <DataTable.Cell>{nombre}</DataTable.Cell>
-                    <DataTable.Cell>{cantidadCargaUtil}</DataTable.Cell>
-                    <DataTable.Cell>{cantidadDesperdicio}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 200}]}>{nombre}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 150}]}>{cantidadCargaUtil}</DataTable.Cell>
+                    <DataTable.Cell style={[styles.cellContainer, { width: 180}]}>{cantidadDesperdicio}</DataTable.Cell>
                   </DataTable.Row>    
                 } 
 
               {showCargaCiega && 
                  <DataTable.Row>
                   <DataTable.Cell style={[styles.cellContainer, { width: 50}]}>{idDonativo} </DataTable.Cell> 
-                
                   <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {conductor}</DataTable.Cell>
-                  <DataTable.Cell style={[styles.cellContainer, { width: 200}]}> {donante} </DataTable.Cell>
-                  <DataTable.Cell style ={styles.cellContainer}> {cargaCiegaTransform} </DataTable.Cell> 
+                  <DataTable.Cell style={[styles.cellContainer, { width: 150}]}> {donante} </DataTable.Cell>
+                  <DataTable.Cell style={[styles.cellContainer, { width: 100}]}> {cargaCiegaTransform} </DataTable.Cell> 
                  </DataTable.Row>     
                 } 
        </View>

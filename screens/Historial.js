@@ -276,24 +276,24 @@ const Historial = () => {
                   <DataTable.Header>
                     <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Cantidad de Carga Útil</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 180 }]}>Cantidad de Desperdicio</DataTable.Title>
                   </DataTable.Header>}
 
                 {showPeores &&
-                  <DataTable.Header>
-                    <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
-                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Desperdicio</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>% Desperdicio</DataTable.Title>
-                  </DataTable.Header>}
+                   <DataTable.Header>
+                   <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
+                   <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
+                   <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Cantidad de Carga Útil</DataTable.Title>
+                   <DataTable.Title style={[styles.tableTitle, { width: 180 }]}>Cantidad de Desperdicio</DataTable.Title>
+                 </DataTable.Header>}
 
                 {showCargaCiega &&
                   <DataTable.Header>
                     <DataTable.Title style={[styles.tableTitle, { width: 50 }]}>Id</DataTable.Title>
                     <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Conductor</DataTable.Title>
-                    <DataTable.Title style={[styles.tableTitle, { width: 200 }]}>Donante</DataTable.Title>
-                    <DataTable.Title style={styles.tableTitle}>Carga Ciega</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 150 }]}>Donante</DataTable.Title>
+                    <DataTable.Title style={[styles.tableTitle, { width: 100 }]}>Carga Ciega</DataTable.Title>
                   </DataTable.Header>}
 
                 {donativoIds.map((objDonativo) => (
