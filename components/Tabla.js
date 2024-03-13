@@ -31,23 +31,12 @@ export default function Tabla({
     parseFloat(cantidadDesperdicio);
     cantidadDesperdicio = Math.round(cantidadDesperdicio * 100) / 100;
   }
-  
-
-  //Generamos un estado para usarlo solamente en las vistas que lo necesitamos
-  const [fechaRegistro, setFechaRegistro] = useState(null);
 
    //TO DO: REVISAR BUG CUANDO VOLVEMOS A TABLAS CON FECHAS
    //DESPUES DE VENIR DE MEJORES O PEORES. FECHA APARECE COMO UNDEFINDED
    //ESTO SUCEDE AL OBTENER DATOS DE MEJORES O PEORES DEBIDO A QUE NO 
    //EXISTE UN CAMPO FECHA
 
-  var fechaBien;
-  //console.log("Estoy recibiendo esta fecha", fecha);
-
- /* if(showHistorial  || showCargaCiega) {
-    fechaBien = fecha.toString();
-    //console.log(fechaBien);
-  }*/
     return (
         <View styles={styles.tableContainer}>    
           {showHistorial&&
