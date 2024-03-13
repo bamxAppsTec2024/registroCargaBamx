@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
   getDownloadURL
 } from "firebase/storage";
-import { getDocs, addDoc, collection, initializeFirestore, doc, updateDoc, where, query } from "firebase/firestore";
+import { getDocs, addDoc, collection, initializeFirestore, doc, updateDoc, where, query, getFirestore } from "firebase/firestore";
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID } from '@env';
 // Initialize Firebase
 const firebaseConfig = {
@@ -17,6 +17,13 @@ const firebaseConfig = {
   appId: APP_ID
 };
 
+
+//console.log(
+//  { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID }
+//);
+
+//console.log(firebaseConfig);
+
 if (getApps().length === 0) {
   initializeApp(firebaseConfig);
 }
@@ -26,6 +33,8 @@ const fbStorage = getStorage(fbApp);
 const db = initializeFirestore(fbApp, {
   experimentalForceLongPolling: true
 });
+
+const getData = getFirestore();
 
 const uploadToFirebase = async (uri, name, onProgress) => {
   const fetchResponse = await fetch(uri);
@@ -139,4 +148,4 @@ const getRecordDonante = async (nombreDonante, cantidadCarga, porcentajeDesperdi
 };
 
 
-export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, uploadUrl, getRecordDonante };
+export { fbApp, db, fbStorage, uploadToFirebase, getCatalogoDropdown, saveRecord, createRecordCatalogo, uploadUrl, getRecordDonante, getData };
