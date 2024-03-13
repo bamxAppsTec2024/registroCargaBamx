@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from "react";
 import { set } from "react-hook-form";
-import {StyleSheet, Modal, View, Pressable, Image} from "react-native";
+import {StyleSheet, Modal, View, Pressable, Text, Image} from "react-native";
 
 import { EvilIcons } from '@expo/vector-icons';
 
